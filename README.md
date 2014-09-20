@@ -1,0 +1,4 @@
+openmediavault-sensors
+======================
+
+sensors plugin

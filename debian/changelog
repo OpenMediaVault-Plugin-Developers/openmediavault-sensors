@@ -1,0 +1,16 @@
+openmediavault-sensors (1.0.1~1.gbp81da43) UNRELEASED; urgency=low
+
+  ** SNAPSHOT build @81da43aebd1c8467c17e0a3b6303d7c658c23e34 **
+
+  [ Jamie ]
+  * Fix first errors found during testing
+
+  [ root ]
+
+ -- Jamie <cpt.miller@fun4gamers.co.uk>  Sat, 20 Sep 2014 18:50:12 +0100
+
+openmediavault-sensors (1.0.0) unstable; urgency=medium
+
+  * Initial release
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 20 Sep 2014 15:26:27 -0500

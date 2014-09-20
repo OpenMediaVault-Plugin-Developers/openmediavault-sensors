@@ -1,0 +1,275 @@
+#!/bin/sh
+
+set -e
+  
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+
+    
+#Check status of the enable checkbox
+if [ "$(omv_config_get "//services/sensors/cpuenable")" != "1" ]; then
+    rm -Rf /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+    rm -Rf /usr/share/openmediavault/mkconf/collectd.d/sensors
+    sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+    sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
+    exit 0
+fi
+
+if ! grep -q 'LoadPlugin sensors' /etc/collectd/collectd.conf; then
+   echo "LoadPlugin sensors" >> /etc/collectd/collectd.conf
+   /etc/init.d/collectd restart
+fi
+
+if [ ! -e /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+    cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+/**
+ * This file is part of OpenMediaVault.
+ *
+ * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+ * @author    Volker Theile <volker.theile@openmediavault.org>
+ * @copyright Copyright (c) 2009-2014 Volker Theile
+ *
+ * OpenMediaVault is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * OpenMediaVault is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ */
+// require("js/omv/workspace/panel/RrdGraph.js")
+
+/**
+ * @class OMV.module.admin.diagnostic.system.plugin.Sensors
+ * @derived OMV.workspace.panel.RrdGraph
+ */
+Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
+        extend: "OMV.workspace.panel.RrdGraph",
+        alias: "omv.plugin.diagnostic.system.sensors",
+
+        title: _("Temperature monitor"),
+        rrdGraphName: "sensors"
+});
+EOF
+fi
+
+#check if hardware detect has already run
+#if not run 'omv-sensors-detect' and 
+# Restart collectd to generate .rdd files
+if [ ! -e /var/lib/rrdcached/db/localhost/sensors-* ]; then
+    /usr/sbin/omv-sensors-detect
+	/etc/init.d/collectd restart
+fi
+
+if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
+    #outfile="/test"
+    outfile="/usr/share/openmediavault/mkconf/collectd.d/sensors"
+    end='\'
+    starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
+    starteof1='cat <<EOF >> ${OMV_COLLECTD_CONFIG}'
+    endeof='EOF'
+    graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
+    collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
+
+    # Get main CPU
+    # Like cores but ATM i don't know values
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk0110*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-it8718*"
+    else
+        main_cpu=""
+    fi
+    cd /var/lib/rrdcached/db//localhost/$main_cpu
+    main=`basename $PWD`
+
+    # Get Cores
+    if [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
+        core="sensors-sis5595*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
+        core="sensors-via686a*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
+        core="sensors-vt8231*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
+        core="sensors-k8temp*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+        core="sensors-k10temp*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
+        core="sensors-fam15h_power*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
+        core="sensors-coretemp*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
+        core="sensors-sensors-i5k_amb*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
+        core="sensors-via-cputemp*"
+    else
+        core=""
+    fi
+    cd /var/lib/rrdcached/db//localhost/$core
+    cores=`basename $PWD`
+
+    # Get number of cores
+    cores_no=`ls /var/lib/rrdcached/db//localhost/$cores/temperature* | xargs -n1 basename`
+
+    do_loop1()
+    {
+    if [ $main_cpu != "" ]; then
+        cat <<EOF >> ${outfile}
+  DEF:cpupavg=\\\${DATA}/${main}/temperature-temp1.rrd:value:AVERAGE ${end}
+  DEF:cpupmin=\\\${DATA}/${main}/temperature-temp1.rrd:value:MIN ${end}
+  DEF:cpupmax=\\\${DATA}/${main}/temperature-temp1.rrd:value:MAX ${end}
+EOF
+    fi
+    }
+
+    do_loop2()
+    {
+    x=0
+    for items in $cores_no;
+    do
+        cat <<EOF >> ${outfile}
+  DEF:cpuc${x}avg=\\\${DATA}/${cores}/${items}:value:AVERAGE ${end}
+  DEF:cpuc${x}min=\\\${DATA}/${cores}/${items}:value:MIN ${end}
+  DEF:cpuc${x}max=\\\${DATA}/${cores}/${items}:value:MAX ${end}
+EOF
+
+    x=$((x + 1))
+    done
+    }
+
+    do_loop3()
+    {
+    if [ $main_cpu != "" ]; then
+        cat <<EOF >> ${outfile}
+  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
+  GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpupavg:LAST:"%4.2lf Last\l" ${end}
+EOF
+    fi
+    }
+
+    do_loop4()
+    {
+    x=0
+    for items in $cores_no;
+    do
+        cat <<EOF >> ${outfile}
+  LINE1:cpuc${x}avg\\\${COLOR_CPU_CORE_$((x))}:"Core $((x + 1))" ${end}
+  GPRINT:cpuc${x}min:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpuc${x}avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpuc${x}max:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpuc${x}avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+    x=$((x + 1))
+    done
+    }
+
+    cat <<EOF > ${outfile}
+#!/bin/sh
+#
+# This file is part of OpenMediaVault.
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Volker Theile <volker.theile@openmediavault.org>
+# @copyright Copyright (c) 2009-2014 Volker Theile
+#
+# OpenMediaVault is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# OpenMediaVault is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+${collected}
+${graph}
+
+${starteof1}
+LoadPlugin sensors
+
+$endeof
+
+${starteof2}
+# Plugin: sensors
+TITLE_LOAD="CPU temperature"
+COLOR_CPU_PHYSICAL="#00cc00" # green
+COLOR_CPU_CORE_0="#0000fd"   # blue
+COLOR_CPU_CORE_1="#ff0000"  # red
+rrdtool graph \\\${IMGDIR}/sensors-hour.png --start \\\${HOURSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${HOURTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+    do_loop1;
+    do_loop2;
+    do_loop3;
+    do_loop4;
+
+    cat <<EOF >> ${outfile}
+  COMMENT:"\\\${LASTUPDATE}" >/dev/null
+rrdtool graph \\\${IMGDIR}/sensors-day.png --start \\\${DAYSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${DAYTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+    do_loop1;
+    do_loop2;
+    do_loop3;
+    do_loop4;
+
+    cat <<EOF >> ${outfile}
+  COMMENT:"\\\${LASTUPDATE}" >/dev/null
+rrdtool graph \\\${IMGDIR}/sensors-week.png --start \\\${WEEKSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${WEEKTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+    do_loop1;
+    do_loop2;
+    do_loop3;
+    do_loop4;
+
+    cat <<EOF >> ${outfile}
+  COMMENT:"\\\${LASTUPDATE}" >/dev/null
+rrdtool graph \\\${IMGDIR}/sensors-month.png --start \\\${MONTHSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${MONTHTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+    do_loop1;
+    do_loop2;
+    do_loop3;
+    do_loop4;
+
+    cat <<EOF >> ${outfile}
+  COMMENT:"\\\${LASTUPDATE}" >/dev/null
+rrdtool graph \\\${IMGDIR}/sensors-year.png --start \\\${YEARSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${YEARTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+    do_loop1;
+    do_loop2;
+    do_loop3;
+    do_loop4;
+
+    cat <<EOF >> ${outfile}
+COMMENT:"\\\${LASTUPDATE}" >/dev/null
+
+${endeof}
+EOF
+
+    chmod +x ${outfile}
+    ${outfile}
+    omv-mkgraph
+    /etc/init.d/collectd restart
+fi

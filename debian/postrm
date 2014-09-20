@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+case "$1" in
+        purge)
+            omv_config_delete "//services/sensors"
+            
+            rm /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js -Rf
+            rm /usr/share/openmediavault/mkconf/collectd.d/sensors -Rf
+            sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+            sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph #Need a better way to clear this entry
+            rm /var/lib/rrdcached/db/localhost/sensors-*/ -Rf
+            rm /usr/sbin/omv-sensors-detect -Rf
+            /etc/init.d/collectd restart
+        ;;
+        remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+
+        *)
+        echo "postrm called with unknown argument '$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

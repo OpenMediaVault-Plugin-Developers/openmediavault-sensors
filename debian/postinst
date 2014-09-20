@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+case "$1" in
+    configure)
+        if ! omv_config_exists "/config/services/sensors"; then
+            echo "Initial configuration."
+            object="<cpuenable>0</cpuenable>"
+            object="${object}<sysfanenable>0</sysfanenable>"
+            object="${object}<cpufanenable>0</cpufanenable>"
+            object="${object}<mbtemp>0</mbtemp>"
+            omv_config_add_element "/config/services" "sensors" "${object}" true
+        fi
+
+        omv_install_fixperms
+
+        # Activate package triggers. These triggers are only set during the
+        # package installation.
+        dpkg-trigger update-fixperms
+        dpkg-trigger update-locale
+
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument" >&2
+        exit 1
+    ;;
+esac
+
+exit 0
