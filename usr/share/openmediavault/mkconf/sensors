@@ -81,13 +81,22 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     # Like cores but ATM i don't know values
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk0110*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp1.rrd ]; then
-        main_cpu="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-it87*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-w83627hf*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-acpitz*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-w83667hg*"
     else
         main_cpu=""
     fi
-    cd /var/lib/rrdcached/db//localhost/$main_cpu
-    main=`basename $PWD`
+
+    if [ $main_cpu != "" ]; then
+        cd /var/lib/rrdcached/db//localhost/$main_cpu
+        main=`basename $PWD`
+    fi
 
     # Get Cores
     if [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
@@ -111,11 +120,18 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     else
         core=""
     fi
-    cd /var/lib/rrdcached/db//localhost/$core
-    cores=`basename $PWD`
 
-    # Get number of cores
-    cores_no=`ls /var/lib/rrdcached/db//localhost/$cores/temperature* | xargs -n1 basename`
+    if [ $core != "" ]; then
+        cd /var/lib/rrdcached/db//localhost/$core
+        cores=`basename $PWD`
+        # Get number of cores
+        cores_no=`ls /var/lib/rrdcached/db//localhost/$cores/temperature* | xargs -n1 basename`
+    fi
+
+    # Need to check this
+    #if [ $core == "" ] && [ $main_cpu == "" ]; then
+    #    exit 0
+    #fi
 
     do_loop1()
     {
