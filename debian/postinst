@@ -9,6 +9,8 @@ case "$1" in
     configure)
         if ! omv_config_exists "/config/services/sensors"; then
             echo "Initial configuration."
+            /usr/sbin/omv-sensors-detect &> /dev/null
+            /etc/init.d/collectd restart &> /dev/null
             object="<cpuenable>0</cpuenable>"
             object="${object}<sysfanenable>0</sysfanenable>"
             object="${object}<cpufanenable>0</cpufanenable>"
