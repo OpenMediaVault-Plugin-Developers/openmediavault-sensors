@@ -93,7 +93,7 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
         #cpucore1=1
 
         if ! [ $cpucore2 = $cpucore1 ]; then
-            cores_no=`echo $cores_no | cut -d " " -f1`
+            #cores_no=`echo $cores_no | cut -d " " -f1`
             y=1
         fi
 
@@ -130,7 +130,7 @@ EOF
 EOF
 
         fi
-    x=$((x + 1))
+        x=$((x + 1))
     done
     }
 
@@ -152,15 +152,17 @@ EOF
     x=0
     for items in $cores_no;
     do
-        cat <<EOF >> ${outfile}
-  LINE1:cpuc${x}avg\\\${COLOR_CPU_CORE_$((x))}:"Core $((x + 1))" ${end}
-  GPRINT:cpuc${x}min:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpuc${x}avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpuc${x}max:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpuc${x}avg:LAST:"%4.2lf Last\l" ${end}
+        if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+            cat <<EOF >> ${outfile}
+  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
+  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
 EOF
 
-    x=$((x + 1))
+        fi
+        x=$((x + 1))
     done
     }
 
