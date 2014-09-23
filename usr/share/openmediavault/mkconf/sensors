@@ -56,8 +56,8 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
     fi
 
     # Get Cores
-    if [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
-        core="sensors-sis5595*"
+    if [ -d /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
+        core="sensors-coretemp*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
         core="sensors-via686a*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
@@ -68,8 +68,8 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
         core="sensors-k10temp*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
         core="sensors-fam15h_power*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
-        core="sensors-coretemp*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
+        core="sensors-sis5595*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
         core="sensors-sensors-i5k_amb*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
@@ -153,11 +153,11 @@ EOF
     for items in $cores_no;
     do
         cat <<EOF >> ${outfile}
-  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+  LINE1:cpuc${x}avg\\\${COLOR_CPU_CORE_$((x))}:"Core $((x + 1))" ${end}
+  GPRINT:cpuc${x}min:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpuc${x}avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpuc${x}max:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpuc${x}avg:LAST:"%4.2lf Last\l" ${end}
 EOF
 
     x=$((x + 1))
