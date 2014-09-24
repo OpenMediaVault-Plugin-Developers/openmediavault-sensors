@@ -44,6 +44,102 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 fieldLabel : _("CPU Temperature"),
                 checked    : false
             },{
+                xtype   : "button",
+                name    : "colours",
+                text    : _("Choose Colours"),
+                scope   : this,
+                menu: [{
+                    text: 'Main CPU Colour',
+                    menu: {
+                        xtype  : 'colormenu',
+                        name   : 'colourc',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 1 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour1',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 2 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour2',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 3 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour3',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 4 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour4',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 5 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour5',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 6 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour6',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 7 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour7',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                },{
+                    text: 'Core 8 Colour',
+                    menu: {
+                        xtype: 'colormenu',
+                        name   : 'colour8',
+                        value  : '000000',
+                        //handler: function (obj, rgb) {
+                        //    Ext.Msg.alert('background-color: ' + rgb.toString());
+                        //} // handler
+                    } // menu
+                }]
+            },{
                 xtype      : "checkbox",
                 name       : "cpufanenable",
                 boxLabel   : _("Will monitor CPU fan speed - Not implemented"),

@@ -75,6 +75,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
         $object["sysfanenable"]  = boolval($object["sysfanenable"]);
         $object["cpufanenable"]  = boolval($object["cpufanenable"]);
         $object["mbtemp"]        = boolval($object["mbtemp"]);
+        //$object["colourc"]       = $object["colourc"];
 
         return $object;
     }
@@ -95,7 +96,9 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
                     "cpuenable"       : { "type" : "boolean" },
                     "sysfanenable"    : { "type" : "boolean" },
                     "cpufanenable"    : { "type" : "boolean" },
-                    "mbtemp"          : { "type" : "boolean" }
+                    "mbtemp"          : { "type" : "boolean" },
+                    "colourc"         : { "type" : "string" }
+
                 }
             }'
         );
@@ -104,7 +107,8 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             "cpuenable"       => array_boolval($params, "cpuenable"),
             "sysfanenable"    => array_boolval($params, "sysfanenable"),
             "cpufanenable"    => array_boolval($params, "cpufanenable"),
-            "mbtemp"          => array_boolval($params, "mbtemp")
+            "mbtemp"          => array_boolval($params, "mbtemp"),
+            "colourc"         => $params["colourc"]
         );
 
         if (false === $xmlConfig->replace($this->getXPath(), $object)) {
