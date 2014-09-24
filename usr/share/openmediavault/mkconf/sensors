@@ -47,6 +47,8 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
         main_cpu="sensors-it87*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83627hf*"
+    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+        main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
@@ -64,8 +66,6 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
         core="sensors-vt8231*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
         core="sensors-k8temp*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
-        core="sensors-k10temp*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
         core="sensors-fam15h_power*"
     elif [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
@@ -260,9 +260,16 @@ rrdtool graph \\\${IMGDIR}/sensors-hour.png --start \\\${HOURSTART} \\\${DEFAULT
 EOF
 
     do_loop1;
-    do_loop2;
+
+    if [ $core != "" ]; then
+        do_loop2;
+    fi
+
     do_loop3;
-    do_loop4;
+
+    if [ $core != "" ]; then
+        do_loop4;
+    fi
 
     cat <<EOF >> ${outfile}
   COMMENT:"\\\${LASTUPDATE}" >/dev/null
@@ -270,9 +277,16 @@ rrdtool graph \\\${IMGDIR}/sensors-day.png --start \\\${DAYSTART} \\\${DEFAULTS}
 EOF
 
     do_loop1;
-    do_loop2;
+
+    if [ $core != "" ]; then
+        do_loop2;
+    fi
+
     do_loop3;
-    do_loop4;
+
+    if [ $core != "" ]; then
+        do_loop4;
+    fi
 
     cat <<EOF >> ${outfile}
   COMMENT:"\\\${LASTUPDATE}" >/dev/null
@@ -280,9 +294,16 @@ rrdtool graph \\\${IMGDIR}/sensors-week.png --start \\\${WEEKSTART} \\\${DEFAULT
 EOF
 
     do_loop1;
-    do_loop2;
+
+    if [ $core != "" ]; then
+        do_loop2;
+    fi
+
     do_loop3;
-    do_loop4;
+
+    if [ $core != "" ]; then
+        do_loop4;
+    fi
 
     cat <<EOF >> ${outfile}
   COMMENT:"\\\${LASTUPDATE}" >/dev/null
@@ -290,9 +311,16 @@ rrdtool graph \\\${IMGDIR}/sensors-month.png --start \\\${MONTHSTART} \\\${DEFAU
 EOF
 
     do_loop1;
-    do_loop2;
+
+    if [ $core != "" ]; then
+        do_loop2;
+    fi
+
     do_loop3;
-    do_loop4;
+
+    if [ $core != "" ]; then
+        do_loop4;
+    fi
 
     cat <<EOF >> ${outfile}
   COMMENT:"\\\${LASTUPDATE}" >/dev/null
@@ -300,9 +328,16 @@ rrdtool graph \\\${IMGDIR}/sensors-year.png --start \\\${YEARSTART} \\\${DEFAULT
 EOF
 
     do_loop1;
-    do_loop2;
+
+    if [ $core != "" ]; then
+        do_loop2;
+    fi
+
     do_loop3;
-    do_loop4;
+
+    if [ $core != "" ]; then
+        do_loop4;
+    fi
 
     cat <<EOF >> ${outfile}
 COMMENT:"\\\${LASTUPDATE}" >/dev/null
