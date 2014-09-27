@@ -24,8 +24,7 @@ require_once "openmediavault/module.inc";
 require_once "openmediavault/util.inc";
 
 class OMVModuleSensors extends OMVModuleServiceAbstract implements
-    OMVINotifyListener,
-    OMVIModuleServiceStatus
+    OMVINotifyListener
 {
 
     private function getPluginName()
@@ -48,21 +47,6 @@ class OMVModuleSensors extends OMVModuleServiceAbstract implements
         return "Sensors";
     }
 
-    public function getStatus()
-    {
-        global $xmlConfig;
-
-        $object = $xmlConfig->get( $this->getXPath() );
-
-        if (is_null($object)) {
-            throw new OMVException(
-                OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
-                $this->getXPath()
-            );
-        }
-
-    }
-	
     public function applyConfig()
     {
         $cmd = sprintf("omv-mkconf %s 2>&1", $this->getPluginName());
