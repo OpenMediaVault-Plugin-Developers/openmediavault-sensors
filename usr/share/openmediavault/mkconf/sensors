@@ -5,6 +5,20 @@ set -e
 . /etc/default/openmediavault
 . /usr/share/openmediavault/scripts/helper-functions
 
+#Get colours, yes i am english.
+arry="$(omv_config_get "//services/sensors/buttonvalues-inputEl")"
+colourc=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colourc"]'`
+colour1=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour1"]'`
+colour2=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour2"]'`
+colour3=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour3"]'`
+colour4=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour4"]'`
+colour5=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour5"]'`
+colour6=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour6"]'`
+colour7=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour7"]'`
+colour8=`echo $arry | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["colour8"]'`
+#echo $colour8
+#exit
+
 y=0
 
 #Check status of the enable checkbox
@@ -246,15 +260,15 @@ $endeof
 ${starteof2}
 # Plugin: sensors
 TITLE_LOAD="CPU temperature"
-COLOR_CPU_PHYSICAL="#00cc00" # green
-COLOR_CPU_CORE_0="#0000fd"   # blue
-COLOR_CPU_CORE_1="#ff0000"   # red
-COLOR_CPU_CORE_2="#cc00cc"   # purple
-COLOR_CPU_CORE_3="#0000cc"   # dark blue
-COLOR_CPU_CORE_4="#cc6600"   # brown
-COLOR_CPU_CORE_5="#ff8308"   # orange
-COLOR_CPU_CORE_6="#ffce3b"   # yellow
-COLOR_CPU_CORE_7="#004f00"   # dark green
+COLOR_CPU_PHYSICAL="#${colourc}"
+COLOR_CPU_CORE_0="#${colour1}"
+COLOR_CPU_CORE_1="#${colour2}"
+COLOR_CPU_CORE_2="#${colour3}"
+COLOR_CPU_CORE_3="#${colour4}"
+COLOR_CPU_CORE_4="#${colour5}"
+COLOR_CPU_CORE_5="#${colour6}"
+COLOR_CPU_CORE_6="#${colour7}"
+COLOR_CPU_CORE_7="#${colour8}"
 
 rrdtool graph \\\${IMGDIR}/sensors-hour.png --start \\\${HOURSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${HOURTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
 EOF
