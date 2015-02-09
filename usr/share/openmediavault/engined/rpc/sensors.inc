@@ -92,11 +92,10 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             '{
                 "type"       : "object",
                 "properties" : {
-                    "cpuenable"              : { "type" : "boolean" },
-                    "sysfanenable"           : { "type" : "boolean" },
-                    "cpufanenable"           : { "type" : "boolean" },
-                    "mbtemp"                 : { "type" : "boolean" }
-
+                    "cpuenable"       : { "type" : "boolean" },
+                    "sysfanenable"    : { "type" : "boolean" },
+                    "cpufanenable"    : { "type" : "boolean" },
+                    "mbtemp"          : { "type" : "boolean" }
                 }
             }'
         );

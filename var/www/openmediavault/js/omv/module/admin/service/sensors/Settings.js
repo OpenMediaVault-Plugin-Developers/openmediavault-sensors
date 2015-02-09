@@ -30,40 +30,40 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
 
     getFormItems : function() {
         var me = this;
-        return Ext.Array.push(items, [{
-            xtype    : 'fieldset',
-            id       : 'first',
-            title    : 'Items to monitor',
+
+        return [{
+            xtype    : "fieldset",
+            title    : "Items to monitor",
             defaults : {
                 labelSeparator : ""
             },
             items : [{
-                xtype      : 'checkbox',
-                name       : 'cpuenable',
-                boxLabel   : _("Will monitor CPU Temperature"),
+                xtype      : "checkbox",
+                name       : "cpuenable",
+                boxLabel   : _("Will monitor CPU Temperature - Working"),
                 fieldLabel : _("CPU Temperature"),
                 checked    : false
             },{
-                xtype      : 'checkbox',
-                name       : 'cpufanenable',
+                xtype      : "checkbox",
+                name       : "cpufanenable",
                 boxLabel   : _("Will monitor CPU fan speed - Not implemented"),
                 fieldLabel : _("CPU Fan Speed"),
                 checked    : false
             },{
-                xtype      : 'checkbox',
-                name       : 'sysfanenable',
+                xtype      : "checkbox",
+                name       : "sysfanenable",
                 boxLabel   : _("Will monitor system fan speed - Not implemented"),
                 fieldLabel : _("SYS Fan Speed"),
                 checked    : false
             },{
-                xtype      : 'checkbox',
-                name       : 'mbtemp',
+                xtype      : "checkbox",
+                name       : "mbtemp",
                 boxLabel   : _("Will monitor Motherboard Temperature - Not implemented"),
                 fieldLabel : _("MB Temperature"),
                 checked    : false
             }]
-        }]);
-    }
+        }];
+    },
 });
 
 OMV.WorkspaceManager.registerPanel({
