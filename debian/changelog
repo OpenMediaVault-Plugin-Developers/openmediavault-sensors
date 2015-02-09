@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.4) unstable; urgency=low
+
+  * Revert changes
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 09 Feb 2015 13:30:54 -0600
+
 openmediavault-sensors (1.0.3) unstable; urgency=low
 
   * Add custom debian/control field XB-Plugin-Section
