@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013 OpenMediaVault Plugin Developers
+ * Copyright (C) 2013-2015 OpenMediaVault Plugin Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,10 @@
 
 Ext.define("OMV.module.admin.service.sensors.Settings", {
     extend : "OMV.workspace.form.Panel",
+    requires: [
+        "OMV.data.Model",
+        "OMV.data.Store"
+    ],
 
     rpcService   : "Sensors",
     rpcGetMethod : "getSettings",

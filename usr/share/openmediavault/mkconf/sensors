@@ -16,9 +16,9 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" != "1" ]; then
     exit 0
 fi
 
-if ! grep -q 'LoadPlugin sensors' /etc/collectd/collectd.conf; then
+if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
    echo "LoadPlugin sensors" >> /etc/collectd/collectd.conf
-   /etc/init.d/collectd restart
+   #/etc/init.d/collectd restart
 fi
 
 #check if hardware detect has already run
@@ -29,8 +29,7 @@ fi
 #	/etc/init.d/collectd restart
 #fi
 
-if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors21 ]; then
-    #outfile="/test"
+if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     outfile="/usr/share/openmediavault/mkconf/collectd.d/sensors"
     end='\'
     starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
@@ -238,10 +237,11 @@ set -e
 ${collected}
 ${graph}
 
-${starteof1}
+if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then
+    ${starteof1}
 LoadPlugin sensors
-
 $endeof
+fi
 
 ${starteof2}
 # Plugin: sensors

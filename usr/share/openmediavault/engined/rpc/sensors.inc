@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2013-2014 OpenMediaVault Plugin Developers
+ * Copyright (C) 2013-2015 OpenMediaVault Plugin Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,10 +107,10 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             "mbtemp"          => array_boolval($params, "mbtemp")
         );
 
-        if (false === $xmlConfig->replace($this->getXPath(), $object)) {
+        if ($xmlConfig->replace($this->getXpath(), $object) === false) {
             throw new OMVException(
                 OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED,
-                $this->getXPath()
+                $this->getXpath()
             );
         }
 

@@ -7,24 +7,24 @@ set -e
 
 case "$1" in
     configure)
-        if ! omv_config_exists "/config/services/sensors"; then
-            echo "Initial configuration."
-            /usr/sbin/omv-sensors-detect &> /dev/null
-            /etc/init.d/collectd restart &> /dev/null
-            object="<cpuenable>0</cpuenable>"
-            object="${object}<sysfanenable>0</sysfanenable>"
-            object="${object}<cpufanenable>0</cpufanenable>"
-            object="${object}<mbtemp>0</mbtemp>"
-            omv_config_add_element "/config/services" "sensors" "${object}" true
-        fi
+        SERVICE_XPATH_NAME="sensors"
+        SERVICE_XPATH="/config/services/${SERVICE_XPATH_NAME}"
 
-        omv_install_fixperms
+        if ! omv_config_exists "${SERVICE_XPATH}"; then
+            echo "Initial configuration."
+            /usr/sbin/omv-sensors-detect >/dev/null 2>&1
+            /etc/init.d/collectd restart >/dev/null 2>&1
+            omv_config_add_element "/config/services" "${SERVICE_XPATH_NAME}"
+            omv_config_add_element "${SERVICE_XPATH}" "cpuenable" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "sysfanenable" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "cpufanenable" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "mbtemp" "0"
+        fi
 
         # Activate package triggers. These triggers are only set during the
         # package installation.
         dpkg-trigger update-fixperms
         dpkg-trigger update-locale
-
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
