@@ -6,72 +6,72 @@ set -e
 . /usr/share/openmediavault/scripts/helper-functions
 
 y=0
+outfile="/usr/share/openmediavault/mkconf/collectd.d/sensors"
+end='\'
+starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
+starteof1='cat <<EOF >> ${OMV_COLLECTD_CONFIG}'
+statment1='if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then'
+#statment2='if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then'
+endeof='EOF'
+graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
+collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
+
 
 #Check status of the enable checkbox
 if [ "$(omv_config_get "//services/sensors/cpuenable")" != "1" ]; then
-    rm -Rf /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-    rm -Rf /usr/share/openmediavault/mkconf/collectd.d/sensors
+    rm /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js -Rf
+    rm /usr/share/openmediavault/mkconf/collectd.d/sensors -Rf
     sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
-    sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
+    sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
+    #sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
     exit 0
 fi
 
 if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
    echo "LoadPlugin sensors" >> /etc/collectd/collectd.conf
-   #/etc/init.d/collectd restart
+   /etc/init.d/collectd restart
 fi
 
-#check if hardware detect has already run
-#if not run 'omv-sensors-detect' and
-# Restart collectd to generate .rdd files
-#if [ ! -e /var/lib/rrdcached/db/localhost/sensors-* ]; then
+#if [ ! -d /var/lib/rrdcached/db/localhost/sensors-* ]; then
 #    /usr/sbin/omv-sensors-detect
-#	/etc/init.d/collectd restart
+#    /etc/init.d/collectd restart
 #fi
 
-if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
-    outfile="/usr/share/openmediavault/mkconf/collectd.d/sensors"
-    end='\'
-    starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
-    starteof1='cat <<EOF >> ${OMV_COLLECTD_CONFIG}'
-    endeof='EOF'
-    graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
-    collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
-
+if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     # Get main CPU
     # Like cores but ATM i don't know values
-    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk0110*/temperature-temp1.rrd ]; then
+    if [ -f /var/lib/rrdcached/db//localhost/sensors-atk0110*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
+    elif [ -f /var/lib/rrdcached/db//localhost/sensors-it87*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it87*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
+    elif [ -f /var/lib/rrdcached/db//localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83627hf*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-k10temp* ]; then
         main_cpu="sensors-k10temp*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
+    elif [ -f /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
+    elif [ -f /var/lib/rrdcached/db//localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
         main_cpu=""
     fi
 
     # Get Cores
-    if [ -d /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
+    if [ -d /var/lib/rrdcached/db//localhost/sensors-coretemp* ]; then
         core="sensors-coretemp*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-via686a* ]; then
         core="sensors-via686a*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-vt8231* ]; then
         core="sensors-vt8231*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-k8temp* ]; then
         core="sensors-k8temp*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-fam15h_power* ]; then
         core="sensors-fam15h_power*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-sis5595* ]; then
         core="sensors-sis5595*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-i5k_amb* ]; then
         core="sensors-sensors-i5k_amb*"
-    elif [ -d /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
+    elif [ -d /var/lib/rrdcached/db//localhost/sensors-via-cputemp* ]; then
         core="sensors-via-cputemp*"
     else
         core=""
@@ -85,14 +85,13 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         cpucore2=`ls -l temp* | grep ^- | wc -l`
         cores_no=`ls temp* | xargs -n1 basename`
 
-        if [ $cpucore1 = "" ]; then
+        if [ "$cpucore1" = "" ]; then
             cpucore1=1
         fi
 
         #cpucore1=1
 
-        if ! [ $cpucore2 = $cpucore1 ]; then
-            #cores_no=`echo $cores_no | cut -d " " -f1`
+        if [ $cpucore2 != $cpucore1 ]; then
             y=1
         fi
 
@@ -108,7 +107,7 @@ if [ ! -e /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     do_loop1()
     {
     if [ $main_cpu != "" ]; then
-        cat <<EOF >> ${outfile}
+        cat <<EOF >> $outfile
   DEF:cpupavg=\\\${DATA}/${main}/temperature-temp1.rrd:value:AVERAGE ${end}
   DEF:cpupmin=\\\${DATA}/${main}/temperature-temp1.rrd:value:MIN ${end}
   DEF:cpupmax=\\\${DATA}/${main}/temperature-temp1.rrd:value:MAX ${end}
@@ -122,7 +121,7 @@ EOF
     for items in $cores_no;
     do
         if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
-            cat <<EOF >> ${outfile}
+            cat <<EOF >> $outfile
   DEF:cpuc$((x - y))avg=\\\${DATA}/${cores}/${items}:value:AVERAGE ${end}
   DEF:cpuc$((x - y))min=\\\${DATA}/${cores}/${items}:value:MIN ${end}
   DEF:cpuc$((x - y))max=\\\${DATA}/${cores}/${items}:value:MAX ${end}
@@ -136,7 +135,7 @@ EOF
     do_loop3()
     {
     if [ $main_cpu != "" ]; then
-        cat <<EOF >> ${outfile}
+        cat <<EOF >> $outfile
   LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
   GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
   GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
@@ -152,7 +151,7 @@ EOF
     for items in $cores_no;
     do
         if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
-            cat <<EOF >> ${outfile}
+            cat <<EOF >> $outfile
   LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
   GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
   GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
@@ -165,18 +164,18 @@ EOF
     done
     }
 
-    if [ $core = "" ] && [ $main_cpu = "" ]; then
+    if [ "$core" = "" ] && [ "$main_cpu" = "" ]; then
         exit 0
     fi
 
-    if [ ! -e /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
     cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
 /**
  * This file is part of OpenMediaVault.
  *
  * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
  * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2014 Volker Theile
+ * @copyright Copyright (c) 2009-2015 Volker Theile
  *
  * OpenMediaVault is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,20 +200,21 @@ Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
         extend: "OMV.workspace.panel.RrdGraph",
         alias: "omv.plugin.diagnostic.system.sensors",
 
-        title: _("Temperature monitor"),
+        title: _("Temp Monitor"),
         rrdGraphName: "sensors"
 });
+
 EOF
     fi
 
-    cat <<EOF > ${outfile}
+    cat <<EOF > $outfile
 #!/bin/sh
 #
 # This file is part of OpenMediaVault.
 #
 # @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
 # @author    Volker Theile <volker.theile@openmediavault.org>
-# @copyright Copyright (c) 2009-2014 Volker Theile
+# @copyright Copyright (c) 2009-2015 Volker Theile
 #
 # OpenMediaVault is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -237,13 +237,13 @@ set -e
 ${collected}
 ${graph}
 
-if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then
-    ${starteof1}
-LoadPlugin sensors
-$endeof
-fi
+#${starteof1}
+#LoadPlugin sensors
+#
+#$endeof
 
 ${starteof2}
+# <<< [openmediavault] sensors-script
 # Plugin: sensors
 TITLE_LOAD="CPU temperature"
 COLOR_CPU_PHYSICAL="#00cc00" # green
@@ -255,9 +255,13 @@ COLOR_CPU_CORE_4="#cc6600"   # brown
 COLOR_CPU_CORE_5="#ff8308"   # orange
 COLOR_CPU_CORE_6="#ffce3b"   # yellow
 COLOR_CPU_CORE_7="#004f00"   # dark green
-
-rrdtool graph \\\${IMGDIR}/sensors-hour.png --start \\\${HOURSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${HOURTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+$endeof
+for ucperiod in HOUR DAY WEEK MONTH YEAR; do
+        lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
+        ${starteof2}
+rrdtool graph \\\${IMGDIR}/sensors-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
 EOF
+
 
     do_loop1;
 
@@ -271,84 +275,25 @@ EOF
         do_loop4;
     fi
 
-    cat <<EOF >> ${outfile}
-  COMMENT:"\\\${LASTUPDATE}" >/dev/null
-rrdtool graph \\\${IMGDIR}/sensors-day.png --start \\\${DAYSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${DAYTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
-EOF
-
-    do_loop1;
-
-    if [ $core != "" ]; then
-        do_loop2;
-    fi
-
-    do_loop3;
-
-    if [ $core != "" ]; then
-        do_loop4;
-    fi
-
-    cat <<EOF >> ${outfile}
-  COMMENT:"\\\${LASTUPDATE}" >/dev/null
-rrdtool graph \\\${IMGDIR}/sensors-week.png --start \\\${WEEKSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${WEEKTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
-EOF
-
-    do_loop1;
-
-    if [ $core != "" ]; then
-        do_loop2;
-    fi
-
-    do_loop3;
-
-    if [ $core != "" ]; then
-        do_loop4;
-    fi
-
-    cat <<EOF >> ${outfile}
-  COMMENT:"\\\${LASTUPDATE}" >/dev/null
-rrdtool graph \\\${IMGDIR}/sensors-month.png --start \\\${MONTHSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${MONTHTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
-EOF
-
-    do_loop1;
-
-    if [ $core != "" ]; then
-        do_loop2;
-    fi
-
-    do_loop3;
-
-    if [ $core != "" ]; then
-        do_loop4;
-    fi
-
-    cat <<EOF >> ${outfile}
-  COMMENT:"\\\${LASTUPDATE}" >/dev/null
-rrdtool graph \\\${IMGDIR}/sensors-year.png --start \\\${YEARSTART} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${YEARTITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
-EOF
-
-    do_loop1;
-
-    if [ $core != "" ]; then
-        do_loop2;
-    fi
-
-    do_loop3;
-
-    if [ $core != "" ]; then
-        do_loop4;
-    fi
-
-    cat <<EOF >> ${outfile}
+    cat <<EOF >> $outfile
 COMMENT:"\\\${LASTUPDATE}" >/dev/null
-
+${endeof}
+done
+${starteof2}
+# >>> [openmediavault] sensors-script
 ${endeof}
 EOF
 
     # Make sure omv-mkgraph is clean
-    sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
-    chmod +x ${outfile}
-    ${outfile}
-    omv-mkgraph
+    sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
+    # Add "LoadPlugin sensors" to /etc/collectd/collectd.conf
+    if ! egrep "^LoadPlugin sensors" /etc/collectd/collectd.conf 2> /dev/null; then
+        echo -e "LoadPlugin sensors\n" >> /etc/collectd/collectd.conf
+    fi
+
+    #sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
+    chmod +x /usr/share/openmediavault/mkconf/collectd.d/sensors
+    /usr/share/openmediavault/mkconf/collectd.d/sensors
     /etc/init.d/collectd restart
+    /usr/sbin/omv-mkgraph
 fi
