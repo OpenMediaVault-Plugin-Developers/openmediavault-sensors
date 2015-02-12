@@ -18,67 +18,71 @@ collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.co
 
 
 #Check status of the enable checkbox
-if [ "$(omv_config_get "//services/sensors/cpuenable")" != "1" ]; then
-    rm /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js -Rf
-    rm /usr/share/openmediavault/mkconf/collectd.d/sensors -Rf
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "0" ]; then
+    if [ -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
+        rm -f /usr/share/openmediavault/mkconf/collectd.d/sensors
+    fi
+
+    if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+        rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+    fi
+
     sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
     sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
-    #sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
     exit 0
 fi
 
-if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-   echo "LoadPlugin sensors" >> /etc/collectd/collectd.conf
-   /etc/init.d/collectd restart
-fi
-
-#if [ ! -d /var/lib/rrdcached/db/localhost/sensors-* ]; then
-#    /usr/sbin/omv-sensors-detect
-#    /etc/init.d/collectd restart
-#fi
-
 if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
+    if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+        /usr/sbin/omv-sensors-detect > /dev/null 2>&1
+        cat <<EOF >> /etc/collectd/collectd.conf
+LoadPlugin sensors
+
+EOF
+        /etc/init.d/collectd restart > /dev/null 2>&1
+    fi
+
     # Get main CPU
     # Like cores but ATM i don't know values
-    if [ -f /var/lib/rrdcached/db//localhost/sensors-atk0110*/temperature-temp1.rrd ]; then
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
-    elif [ -f /var/lib/rrdcached/db//localhost/sensors-it87*/temperature-temp1.rrd ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it87*"
-    elif [ -f /var/lib/rrdcached/db//localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83627hf*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-k10temp* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
         main_cpu="sensors-k10temp*"
-    elif [ -f /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
-    elif [ -f /var/lib/rrdcached/db//localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
         main_cpu=""
     fi
 
     # Get Cores
-    if [ -d /var/lib/rrdcached/db//localhost/sensors-coretemp* ]; then
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
         core="sensors-coretemp*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-via686a* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
         core="sensors-via686a*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-vt8231* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
         core="sensors-vt8231*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-k8temp* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
         core="sensors-k8temp*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-fam15h_power* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
         core="sensors-fam15h_power*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-sis5595* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
         core="sensors-sis5595*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-i5k_amb* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
         core="sensors-sensors-i5k_amb*"
-    elif [ -d /var/lib/rrdcached/db//localhost/sensors-via-cputemp* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
         core="sensors-via-cputemp*"
     else
         core=""
     fi
 
     if [ $core != "" ]; then
-        cd /var/lib/rrdcached/db//localhost/$core
+        cd /var/lib/rrdcached/db/localhost/$core
         cores=`basename $PWD`
         # Other Method to get cores
         cpucore1=`cat /proc/cpuinfo | grep -m1 "cpu cores" | cut -d ":" -f2`
@@ -100,7 +104,7 @@ if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     if [ "$y" = "1" ]; then
         main=$cores
     elif [ $main_cpu != "" ]; then
-        cd /var/lib/rrdcached/db//localhost/$main_cpu
+        cd /var/lib/rrdcached/db/localhost/$main_cpu
         main=`basename $PWD`
     fi
 
@@ -166,45 +170,6 @@ EOF
 
     if [ "$core" = "" ] && [ "$main_cpu" = "" ]; then
         exit 0
-    fi
-
-    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
-    cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-/**
- * This file is part of OpenMediaVault.
- *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2015 Volker Theile
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * OpenMediaVault is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
- */
-// require("js/omv/workspace/panel/RrdGraph.js")
-
-/**
- * @class OMV.module.admin.diagnostic.system.plugin.Sensors
- * @derived OMV.workspace.panel.RrdGraph
- */
-Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
-        extend: "OMV.workspace.panel.RrdGraph",
-        alias: "omv.plugin.diagnostic.system.sensors",
-
-        title: _("Temp Monitor"),
-        rrdGraphName: "sensors"
-});
-
-EOF
     fi
 
     cat <<EOF > $outfile
@@ -283,17 +248,59 @@ ${starteof2}
 # >>> [openmediavault] sensors-script
 ${endeof}
 EOF
+fi
 
+if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+    cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+/**
+ * This file is part of OpenMediaVault.
+ *
+ * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+ * @author    Volker Theile <volker.theile@openmediavault.org>
+ * @copyright Copyright (c) 2009-2014 Volker Theile
+ *
+ * OpenMediaVault is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * OpenMediaVault is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ */
+// require("js/omv/workspace/panel/RrdGraph.js")
+
+/**
+ * @class OMV.module.admin.diagnostic.system.plugin.Sensors
+ * @derived OMV.workspace.panel.RrdGraph
+ */
+Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
+        extend: "OMV.workspace.panel.RrdGraph",
+        alias: "omv.plugin.diagnostic.system.sensors",
+
+        title: _("Temperature monitor"),
+        rrdGraphName: "sensors"
+});
+
+EOF
+fi
+
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     # Make sure omv-mkgraph is clean
     sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
-    # Add "LoadPlugin sensors" to /etc/collectd/collectd.conf
     if ! egrep "^LoadPlugin sensors" /etc/collectd/collectd.conf 2> /dev/null; then
         echo -e "LoadPlugin sensors\n" >> /etc/collectd/collectd.conf
     fi
 
-    #sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
     chmod +x /usr/share/openmediavault/mkconf/collectd.d/sensors
     /usr/share/openmediavault/mkconf/collectd.d/sensors
-    /etc/init.d/collectd restart
-    /usr/sbin/omv-mkgraph
+    /etc/init.d/collectd restart > /dev/null 2>&1
+    /usr/sbin/omv-mkgraph > /dev/null 2>&1
+    rm -f /var/cache/openmediavault/cache.*.json > /dev/null 2>&1
 fi
+
+exit 0

@@ -12,13 +12,20 @@ case "$1" in
 
         if ! omv_config_exists "${SERVICE_XPATH}"; then
             echo "Initial configuration."
-            /usr/sbin/omv-sensors-detect >/dev/null 2>&1
-            /etc/init.d/collectd restart >/dev/null 2>&1
             omv_config_add_element "/config/services" "${SERVICE_XPATH_NAME}"
             omv_config_add_element "${SERVICE_XPATH}" "cpuenable" "0"
             omv_config_add_element "${SERVICE_XPATH}" "sysfanenable" "0"
             omv_config_add_element "${SERVICE_XPATH}" "cpufanenable" "0"
             omv_config_add_element "${SERVICE_XPATH}" "mbtemp" "0"
+        fi
+
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            /usr/sbin/omv-sensors-detect > /dev/null 2>&1
+            cat <<EOF >> /etc/collectd/collectd.conf
+LoadPlugin sensors
+
+EOF
+            /etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
         # Activate package triggers. These triggers are only set during the

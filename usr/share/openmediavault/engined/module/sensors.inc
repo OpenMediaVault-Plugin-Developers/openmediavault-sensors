@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once "openmediavault/config.inc";
-require_once "openmediavault/error.inc";
-require_once "openmediavault/initscript.inc";
-require_once "openmediavault/module.inc";
+require_once("openmediavault/module.inc");
+require_once("openmediavault/config.inc");
+require_once("openmediavault/error.inc");
+require_once("openmediavault/util.inc");
 
 class OMVModuleSensors extends OMVModuleServiceAbstract implements
-    OMVINotifyListener,
-    OMVIModuleServiceStatus
+    OMVINotifyListener
 {
 
     private function getPluginName()
@@ -49,8 +48,9 @@ class OMVModuleSensors extends OMVModuleServiceAbstract implements
 	
     public function applyConfig()
     {
-        $cmd = sprintf("omv-mkconf %s 2>&1", $this->getPluginName());
+        global $xmlConfig;
 
+        $cmd = sprintf("omv-mkconf %s balls 2>&1", $this->getPluginName());
         if (0 !== $this->exec($cmd, $output)) {
             throw new OMVException(
                 OMVErrorMsg::E_EXEC_FAILED,
@@ -60,22 +60,7 @@ class OMVModuleSensors extends OMVModuleServiceAbstract implements
         }
     }
 
-    public function getStatus()
-    {
-        global $xmlConfig;
-
-        $object = $xmlConfig->get( $this->getXPath() );
-
-        if (is_null($object)) {
-            throw new OMVException(
-                OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
-                $this->getXPath()
-            );
-        }
-
-    }
-
-    public function bindListeners(OMVNotifyDispatcher $dispatcher)
+    function bindListeners(OMVNotifyDispatcher $dispatcher)
     {
         $dispatcher->addListener(
             OMV_NOTIFY_MODIFY,
