@@ -27,7 +27,9 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "0" ]; then
         rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
     fi
 
-    sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+    if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+        sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+    if
     sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
     exit 0
 fi
@@ -46,6 +48,8 @@ EOF
     # Like cores but ATM i don't know values
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it87*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
