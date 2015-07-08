@@ -529,7 +529,149 @@ EOF
 
             /etc/init.d/collectd restart > /dev/null 2>&1
         fi
+
+        # Get CPU FAN
+        if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-atk0110*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-axp20_mfd*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-it87*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-w83627hf*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-k10temp*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
+            cpu_fan="sensors-w83667hg*"
+        elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
+            cpu_fan=""
+        else
+            cpu_fan=""
+        fi
+
+	    if [ $cpu_fan != "" ]; then
+            cd /var/lib/rrdcached/db/localhost/$cpu_fan
+            main=`basename $PWD`
+        fi
+
+        do_fan1()
+        {
+        if [ $cpu_fan != "" ]; then
+            cat <<EOF >> $FANoutfile
+  DEF:fan1pavg=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:AVERAGE ${end}
+  DEF:fan1pmin=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:MIN ${end}
+  DEF:fan1pmax=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:MAX ${end}
+  LINE1:fan1pavg\\\${COLOR_CPU_FAN}:"   CPU Fan" ${end}
+  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:fan1pavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:fan1pavg:LAST:"%4.2lf Last\l" ${end}
+EOF
+        fi
+        }
+        cat <<EOF > $FANoutfile
+#!/bin/sh
+#
+# This file is part of OpenMediaVault.
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Volker Theile <volker.theile@openmediavault.org>
+# @copyright Copyright (c) 2009-2015 Volker Theile
+#
+# OpenMediaVault is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# OpenMediaVault is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+. /etc/default/openmediavault
+. /usr/share/openmediavault/scripts/helper-functions
+
+${collected}
+${graph}
+
+${starteof2}
+# <<< [openmediavault] fan-script
+# Plugin: fan
+TITLE_LOAD="CPU fan speed"
+COLOR_CPU_FAN="#00cc00" # green
+$endeof
+for ucperiod in HOUR DAY WEEK MONTH YEAR; do
+        lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
+        ${starteof2}
+rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+EOF
+
+        do_fan1;
+
+        cat <<EOF >> $FANoutfile
+COMMENT:"\\\${LASTUPDATE}" >/dev/null
+${endeof}
+done
+${starteof2}
+# >>> [openmediavault] fan-script
+${endeof}
+EOF
+
     fi
+
+    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
+        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
+/**
+ * This file is part of OpenMediaVault.
+ *
+ * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+ * @author    Volker Theile <volker.theile@openmediavault.org>
+ * @copyright Copyright (c) 2009-2014 Volker Theile
+ *
+ * OpenMediaVault is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * OpenMediaVault is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ */
+// require("js/omv/workspace/panel/RrdGraph.js")
+
+/**
+ * @class OMV.module.admin.diagnostic.system.plugin.Fan
+ * @derived OMV.workspace.panel.RrdGraph
+ */
+Ext.define("OMV.module.admin.diagnostic.system.plugin.Fan", {
+        extend: "OMV.workspace.panel.RrdGraph",
+        alias: "omv.plugin.diagnostic.system.fan",
+
+        title: _("CPU fan speed"),
+        rrdGraphName: "fan"
+});
+
+EOF
+    fi
+
+    # Make sure omv-mkgraph is clean
+    sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
+
+    if ! egrep "^LoadPlugin fan" /etc/collectd/collectd.conf 2> /dev/null; then
+        echo -e "LoadPlugin fan\n" >> /etc/collectd/collectd.conf
+    fi
+
+    chmod +x $FANoutfile
+    $FANoutfile
 fi
 
 if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
@@ -545,9 +687,10 @@ EOF
     fi
 fi
 
-exit 0
 #add these last
 /etc/init.d/collectd restart > /dev/null 2>&1
 /usr/sbin/omv-mkgraph > /dev/null 2>&1
 rm -f /var/cache/openmediavault/cache.*.json > /dev/null 2>&1
+
+exit 0
 
