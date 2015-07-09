@@ -22,71 +22,278 @@ endeof='EOF'
 graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
 collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
 
+do_cpu1() {
+if [ $main_cpu != "" ]; then
+    cat <<EOF >> $CPUoutfile
+  DEF:cpupavg=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:AVERAGE ${end}
+  DEF:cpupmin=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:MIN ${end}
+  DEF:cpupmax=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:MAX ${end}
+EOF
+
+fi
+}
+
+do_cpu2() {
+x=0
+for items in $cores_no;
+do
+    if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+        cat <<EOF >> $CPUoutfile
+  DEF:cpuc$((x - y))avg=\\\${DATA}/${cores}/${items}:value:AVERAGE ${end}
+  DEF:cpuc$((x - y))min=\\\${DATA}/${cores}/${items}:value:MIN ${end}
+  DEF:cpuc$((x - y))max=\\\${DATA}/${cores}/${items}:value:MAX ${end}
+EOF
+
+    fi
+    x=$((x + 1))
+done
+}
+
+do_cpu3() {
+if [ $main_cpu != "" ]; then
+    cat <<EOF >> $CPUoutfile
+  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
+  GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpupavg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+fi
+}
+
+do_cpu4() {
+x=0
+for items in $cores_no;
+do
+    if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+        cat <<EOF >> $CPUoutfile
+  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
+  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+    fi
+    x=$((x + 1))
+done
+}
+
+do_mb1() {
+if [ $mb_temp != "" ]; then
+    cat <<EOF >> $MBoutfile
+  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:AVERAGE ${end}
+  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MIN ${end}
+  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MAX ${end}
+  LINE1:mbtavg\\\${COLOR_MBT}:"   MB" ${end}
+  GPRINT:mbtpmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:mbtavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:mbtpmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:mbtavg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+fi
+}
+
+do_fan1() {
+if [ $cpu_fan != "" ]; then
+    cat <<EOF >> $FANoutfile
+  DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:AVERAGE ${end}
+  DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:MIN ${end}
+  DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:MAX ${end}
+  LINE1:fan1avg\\\${COLOR_CPU_FAN}:"   CPU Fan" ${end}
+  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:fan1avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+fi
+}
 
 #Check status of the enable checkboxs
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "0" ]; then
-    if [ -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
-        rm -f /usr/share/openmediavault/mkconf/collectd.d/sensors
-    fi
-
-    if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
-        rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-    fi
-
-    if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-        sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
-    fi
-    sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
-    #exit 0
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "0" -o "$(omv_config_get "//services/sensors/mbtemp")" = "0" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
+    #Change value to zero
+    xmlstarlet ed -L -u "//services/sensors/jntemp" -v 0 -n ${OMV_CONFIG_FILE}
 fi
 
-if [ "$(omv_config_get "//services/sensors/mbtemp")" = "0" ]; then
-    if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
-        rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
-    fi
-
-    if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js ]; then
-        rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js
-    fi
-
-    if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
-        sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
-    fi
-    sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
-    #exit 0
+if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "0" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "0" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "1" ]; then
+    #Change value to zero
+    xmlstarlet ed -L -u "//services/sensors/jnfans" -v 0 -n ${OMV_CONFIG_FILE}
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "0" ]; then
-    if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
-        rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
+    # Get main CPU
+    # Like cores but ATM i don't know values
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-axp20_mfd*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-it87*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-w83627hf*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+        main_cpu="sensors-k10temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
+        main_cpu=""
+    else
+        main_cpu=""
     fi
 
-    if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
-        rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
+    # Get Cores
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
+        core="sensors-coretemp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
+        core="sensors-via686a*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
+        core="sensors-vt8231*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
+        core="sensors-k8temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
+        core="sensors-fam15h_power*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
+        core="sensors-sis5595*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
+        core="sensors-sensors-i5k_amb*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
+        core="sensors-via-cputemp*"
+    else
+        core=""
     fi
 
-    if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
-        sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
+    if [ $core != "" ]; then
+        cd /var/lib/rrdcached/db/localhost/$core
+        cores=`basename $PWD`
+        # Other Method to get cores
+        cpucore1=`cat /proc/cpuinfo | grep -m1 "cpu cores" | cut -d ":" -f2`
+        cpucore2=`ls -l temp* | grep ^- | wc -l`
+        cores_no=`ls temp* | xargs -n1 basename`
+
+        if [ "$cpucore1" = "" ]; then
+            cpucore1=1
+        fi
+
+        if [ $cpucore2 != $cpucore1 ]; then
+            y=1
+        fi
     fi
-    sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
-    #exit 0
+
+    if [ "$y" = "1" ]; then
+        main=$cores
+    elif [ $main_cpu != "" ]; then
+        cd /var/lib/rrdcached/db/localhost/$main_cpu
+        main_cpu=`basename $PWD`
+    fi
 fi
 
-if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "0" ]; then
-    if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
-        rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
+if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
+    # Get MB temp
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-axp20_mfd*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-it87*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-w83627hf*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-k10temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
+        mb_temp=""
+    else
+        mb_temp=""
     fi
 
-    if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js ]; then
-        rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js
+	if [ $mb_temp != "" ]; then
+        cd /var/lib/rrdcached/db/localhost/$mb_temp
+        mb_temp=`basename $PWD`
     fi
-
-    if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
-        sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
-    fi
-    sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
-    #exit 0
 fi
+
+if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
+    # Get CPU FAN
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-axp20_mfd*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-it87*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-w83627hf*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-k10temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
+        cpu_fan=""
+    else
+        cpu_fan=""
+    fi
+
+    if [ $cpu_fan != "" ]; then
+        cd /var/lib/rrdcached/db/localhost/$cpu_fan
+        cpu_fan=`basename $PWD`
+    fi
+fi
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/sensors
+fi
+
+if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+fi
+
+if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+    sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+fi
+sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
+
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
+fi
+
+if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js ]; then
+    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js
+fi
+
+if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
+    sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
+fi
+sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
+fi
+
+if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
+    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
+fi
+
+if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
+    sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
+fi
+sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
+fi
+
+if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js ]; then
+    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js
+fi
+
+if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
+    sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
+fi
+sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
 
 #Run /usr/sbin/omv-sensors-detect > /dev/null 2>&1 here ONLY once
 if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "1" -o "$(omv_config_get "//services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
@@ -104,133 +311,6 @@ LoadPlugin sensors
 EOF
             /etc/init.d/collectd restart > /dev/null 2>&1
         fi
-
-        # Get main CPU
-        # Like cores but ATM i don't know values
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
-            main_cpu="sensors-atk0110*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
-            main_cpu="sensors-axp20_mfd*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
-            main_cpu="sensors-it87*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
-            main_cpu="sensors-w83627hf*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
-            main_cpu="sensors-k10temp*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
-            main_cpu="sensors-w83667hg*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
-            main_cpu=""
-        else
-            main_cpu=""
-        fi
-
-        # Get Cores
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
-            core="sensors-coretemp*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
-            core="sensors-via686a*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-vt8231* ]; then
-            core="sensors-vt8231*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-k8temp* ]; then
-            core="sensors-k8temp*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-fam15h_power* ]; then
-            core="sensors-fam15h_power*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-sis5595* ]; then
-            core="sensors-sis5595*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-i5k_amb* ]; then
-            core="sensors-sensors-i5k_amb*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-via-cputemp* ]; then
-            core="sensors-via-cputemp*"
-        else
-            core=""
-        fi
-
-        if [ $core != "" ]; then
-            cd /var/lib/rrdcached/db/localhost/$core
-            cores=`basename $PWD`
-            # Other Method to get cores
-            cpucore1=`cat /proc/cpuinfo | grep -m1 "cpu cores" | cut -d ":" -f2`
-            cpucore2=`ls -l temp* | grep ^- | wc -l`
-            cores_no=`ls temp* | xargs -n1 basename`
-
-            if [ "$cpucore1" = "" ]; then
-                cpucore1=1
-            fi
-
-            #cpucore1=1
-
-            if [ $cpucore2 != $cpucore1 ]; then
-                y=1
-            fi
-        fi
-
-        if [ "$y" = "1" ]; then
-            main=$cores
-        elif [ $main_cpu != "" ]; then
-            cd /var/lib/rrdcached/db/localhost/$main_cpu
-            main=`basename $PWD`
-        fi
-
-        do_cpu1()
-        {
-        if [ $main_cpu != "" ]; then
-            cat <<EOF >> $CPUoutfile
-  DEF:cpupavg=\\\${DATA}/${main}/temperature-temp1.rrd:value:AVERAGE ${end}
-  DEF:cpupmin=\\\${DATA}/${main}/temperature-temp1.rrd:value:MIN ${end}
-  DEF:cpupmax=\\\${DATA}/${main}/temperature-temp1.rrd:value:MAX ${end}
-EOF
-        fi
-        }
-
-        do_cpu2()
-        {
-        x=0
-        for items in $cores_no;
-        do
-            if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
-                cat <<EOF >> $CPUoutfile
-  DEF:cpuc$((x - y))avg=\\\${DATA}/${cores}/${items}:value:AVERAGE ${end}
-  DEF:cpuc$((x - y))min=\\\${DATA}/${cores}/${items}:value:MIN ${end}
-  DEF:cpuc$((x - y))max=\\\${DATA}/${cores}/${items}:value:MAX ${end}
-EOF
-
-            fi
-            x=$((x + 1))
-        done
-        }
-
-        do_cpu3()
-        {
-        if [ $main_cpu != "" ]; then
-            cat <<EOF >> $CPUoutfile
-  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
-  GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpupavg:LAST:"%4.2lf Last\l" ${end}
-EOF
-        fi
-        }
-
-        do_cpu4()
-        {
-        x=0
-        for items in $cores_no;
-        do
-            if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
-                cat <<EOF >> $CPUoutfile
-  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
-EOF
-
-            fi
-            x=$((x + 1))
-        done
-        }
 
         if [ "$core" = "" ] && [ "$main_cpu" = "" ]; then
             exit 0
@@ -284,6 +364,7 @@ COLOR_CPU_CORE_4="#cc6600"   # brown
 COLOR_CPU_CORE_5="#ff8308"   # orange
 COLOR_CPU_CORE_6="#ffce3b"   # yellow
 COLOR_CPU_CORE_7="#004f00"   # dark green
+COLOR_MBT="#000000"          # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
@@ -291,8 +372,11 @@ for ucperiod in HOUR DAY WEEK MONTH YEAR; do
 rrdtool graph \\\${IMGDIR}/sensors-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
 EOF
 
-
         do_cpu1;
+		if [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
+            MBoutfile=$CPUoutfile
+            do_mb1;
+        fi
 
         if [ $core != "" ]; then
             do_cpu2;
@@ -312,6 +396,7 @@ ${starteof2}
 # >>> [openmediavault] sensors-script
 ${endeof}
 EOF
+
     fi
 
     if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
@@ -345,12 +430,25 @@ EOF
 Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
         extend: "OMV.workspace.panel.RrdGraph",
         alias: "omv.plugin.diagnostic.system.sensors",
+EOF
 
-        title: _("Temperature monitor"),
+        if [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
+            cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+        title: _("Temps"),
         rrdGraphName: "sensors"
 });
 
 EOF
+
+        else
+            cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+        title: _("CPU Temp"),
+        rrdGraphName: "sensors"
+});
+
+EOF
+
+        fi
     fi
 
     # Make sure omv-mkgraph is clean
@@ -360,11 +458,11 @@ EOF
         echo -e "LoadPlugin sensors\n" >> /etc/collectd/collectd.conf
     fi
 
-    chmod +x /usr/share/openmediavault/mkconf/collectd.d/sensors
-    /usr/share/openmediavault/mkconf/collectd.d/sensors
+    chmod +x $CPUoutfile
+    $CPUoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
+if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
         if ! grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
             cat <<EOF >> /etc/collectd/collectd.conf
@@ -375,45 +473,6 @@ EOF
             /etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
-        # Get MB temp
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp2.rrd ]; then
-            main_temp="sensors-atk0110*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp2.rrd ]; then
-            main_temp="sensors-axp20_mfd*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp2.rrd ]; then
-            main_temp="sensors-it87*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp2.rrd ]; then
-            main_temp="sensors-w83627hf*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/temperature-temp2.rrd ]; then
-            main_temp="sensors-k10temp*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
-            main_temp="sensors-w83667hg*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
-            main_temp=""
-        else
-            main_temp=""
-        fi
-
-	    if [ $main_temp != "" ]; then
-            cd /var/lib/rrdcached/db/localhost/$main_temp
-            main=`basename $PWD`
-        fi
-
-        do_mb1()
-        {
-        if [ $main_temp != "" ]; then
-            cat <<EOF >> $MBoutfile
-  DEF:mbtpavg=\\\${DATA}/${main}/temperature-temp2.rrd:value:AVERAGE ${end}
-  DEF:mbtpmin=\\\${DATA}/${main}/temperature-temp2.rrd:value:MIN ${end}
-  DEF:mbtpmax=\\\${DATA}/${main}/temperature-temp2.rrd:value:MAX ${end}
-  LINE1:mbtpavg\\\${COLOR_MBT}:"   MB" ${end}
-  GPRINT:mbtpmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:mbtpavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:mbtpmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:mbtpavg:LAST:"%4.2lf Last\l" ${end}
-EOF
-        fi
-        }
         cat <<EOF > $MBoutfile
 #!/bin/sh
 #
@@ -447,8 +506,8 @@ ${graph}
 ${starteof2}
 # <<< [openmediavault] mb-script
 # Plugin: mb
-TITLE_LOAD="MB temperature"
-COLOR_MBT="#00cc00" # green
+TITLE_LOAD="MB temp"
+COLOR_MBT="#000000" # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
@@ -530,45 +589,6 @@ EOF
             /etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
-        # Get CPU FAN
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-atk0110*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-axp20_mfd*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-it87*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-w83627hf*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-k10temp*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
-            cpu_fan="sensors-w83667hg*"
-        elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
-            cpu_fan=""
-        else
-            cpu_fan=""
-        fi
-
-	    if [ $cpu_fan != "" ]; then
-            cd /var/lib/rrdcached/db/localhost/$cpu_fan
-            main=`basename $PWD`
-        fi
-
-        do_fan1()
-        {
-        if [ $cpu_fan != "" ]; then
-            cat <<EOF >> $FANoutfile
-  DEF:fan1pavg=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:AVERAGE ${end}
-  DEF:fan1pmin=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:MIN ${end}
-  DEF:fan1pmax=\\\${DATA}/${main}/fanspeed-fan1.rrd:value:MAX ${end}
-  LINE1:fan1pavg\\\${COLOR_CPU_FAN}:"   CPU Fan" ${end}
-  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:fan1pavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:fan1pavg:LAST:"%4.2lf Last\l" ${end}
-EOF
-        fi
-        }
         cat <<EOF > $FANoutfile
 #!/bin/sh
 #
@@ -603,12 +623,12 @@ ${starteof2}
 # <<< [openmediavault] fan-script
 # Plugin: fan
 TITLE_LOAD="CPU fan speed"
-COLOR_CPU_FAN="#00cc00" # green
+COLOR_CPU_FAN="#000000" # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
         ${starteof2}
-rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0 ${end}
 EOF
 
         do_fan1;

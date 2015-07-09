@@ -32,6 +32,29 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
     rpcGetMethod : "getSettings",
     rpcSetMethod : "setSettings",
 
+    plugins      : [{
+        ptype        : "linkedfields",
+        correlations : [{
+            name       : [
+                "jntemp",
+            ],
+            conditions : [
+                { name  : "cpuenable", value : true },
+                { name  : "mbtemp", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "jnfans",
+            ],
+            conditions : [
+                { name  : "cpufanenable", value : true },
+                { name  : "sysfanenable", value : true }
+            ],
+            properties : "show"
+        }]
+    }],
+
     getFormItems : function() {
         var me = this;
 
@@ -44,13 +67,25 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
             items : [{
                 xtype      : "checkbox",
                 name       : "cpuenable",
-                boxLabel   : _("Will monitor CPU Temperature - Working"),
+                boxLabel   : _("Will monitor CPU Temperature"),
                 fieldLabel : _("CPU Temperature"),
                 checked    : false
             },{
                 xtype      : "checkbox",
+                name       : "mbtemp",
+                boxLabel   : _("Will monitor Motherboard Temperature"),
+                fieldLabel : _("MB Temperature"),
+                checked    : false
+            },{
+                xtype      : "checkbox",
+                name       : "jntemp",
+                boxLabel   : _("Create 1 graph for temperatures"),
+                fieldLabel : _(""),
+                checked    : false
+            },{
+                xtype      : "checkbox",
                 name       : "cpufanenable",
-                boxLabel   : _("Will monitor CPU fan speed - Not implemented"),
+                boxLabel   : _("Will monitor CPU fan speed"),
                 fieldLabel : _("CPU Fan Speed"),
                 checked    : false
             },{
@@ -61,9 +96,9 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 checked    : false
             },{
                 xtype      : "checkbox",
-                name       : "mbtemp",
-                boxLabel   : _("Will monitor Motherboard Temperature - Not implemented"),
-                fieldLabel : _("MB Temperature"),
+                name       : "jnfans",
+                boxLabel   : _("Create 1 graph for fan speeds"),
+                fieldLabel : _(""),
                 checked    : false
             }]
         }];
