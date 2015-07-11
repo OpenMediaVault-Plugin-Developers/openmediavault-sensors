@@ -100,6 +100,12 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 boxLabel   : _("Create 1 graph for fan speeds"),
                 fieldLabel : _(""),
                 checked    : false
+            },{
+                xtype      : "checkbox",
+                name       : "fheit",
+                boxLabel   : _("Will show temps in fahrenheit"),
+                fieldLabel : _("Fahrenheit"),
+                checked    : false
             }]
         }];
     },

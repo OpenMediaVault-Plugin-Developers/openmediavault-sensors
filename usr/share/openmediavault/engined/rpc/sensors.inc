@@ -75,6 +75,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
         $object["sysfanenable"]  = boolval($object["sysfanenable"]);
         $object["cpufanenable"]  = boolval($object["cpufanenable"]);
         $object["mbtemp"]        = boolval($object["mbtemp"]);
+        $object["fheit"]         = boolval($object["fheit"]);
         $object["jntemp"]        = boolval($object["jntemp"]);
         $object["jnfans"]        = boolval($object["jnfans"]);
 
@@ -98,6 +99,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
                     "sysfanenable"    : { "type" : "boolean" },
                     "cpufanenable"    : { "type" : "boolean" },
                     "mbtemp"          : { "type" : "boolean" },
+                    "fheit"           : { "type" : "boolean" },
                     "jntemp"          : { "type" : "boolean" },
                     "jnfans"          : { "type" : "boolean" }
                 }
@@ -109,6 +111,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             "sysfanenable"    => array_boolval($params, "sysfanenable"),
             "cpufanenable"    => array_boolval($params, "cpufanenable"),
             "mbtemp"          => array_boolval($params, "mbtemp"),
+            "fheit"           => array_boolval($params, "fheit"),
             "jntemp"          => array_boolval($params, "jntemp"),
             "jnfans"          => array_boolval($params, "jnfans")
         );
