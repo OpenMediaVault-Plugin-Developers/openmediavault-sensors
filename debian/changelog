@@ -1,4 +1,4 @@
-openmediavault-sensors (1.0.7) unstable; urgency=low
+openmediavault-sensors (1.0.7) TESTING; urgency=low
 
   * Add MB temp and cpu fan speed
 

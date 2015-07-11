@@ -65,14 +65,14 @@ fi
 do_cpu3f() {
 if [ $main_cpu != "" ]; then
     cat <<EOF >> $CPUoutfile
-  CDEF:far1=9,5,/,cpupavg,*,32,+ ${end}
-  CDEF:far2=9,5,/,cpupmin,*,32,+ ${end}
-  CDEF:far3=9,5,/,cpupmax,*,32,+ ${end}
-  LINE1:far1\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
-  GPRINT:far2:MIN:"%4.2lf Min" ${end}
-  GPRINT:far1:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:far3:MAX:"%4.2lf Max" ${end}
-  GPRINT:far1:LAST:"%4.2lf Last\l" ${end}
+  CDEF:farc1=9,5,/,cpupavg,*,32,+ ${end}
+  CDEF:farc2=9,5,/,cpupmin,*,32,+ ${end}
+  CDEF:farc3=9,5,/,cpupmax,*,32,+ ${end}
+  LINE1:farc1\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
+  GPRINT:farc2:MIN:"%4.2lf Min" ${end}
+  GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:farc3:MAX:"%4.2lf Max" ${end}
+  GPRINT:farc1:LAST:"%4.2lf Last\l" ${end}
 EOF
 
 fi

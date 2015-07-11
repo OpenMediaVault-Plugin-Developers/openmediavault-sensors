@@ -80,7 +80,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 xtype      : "checkbox",
                 name       : "jntemp",
                 boxLabel   : _("Create 1 graph for temperatures"),
-                fieldLabel : _(""),
+                fieldLabel : _(" "),
                 checked    : false
             },{
                 xtype      : "checkbox",
@@ -98,7 +98,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 xtype      : "checkbox",
                 name       : "jnfans",
                 boxLabel   : _("Create 1 graph for fan speeds"),
-                fieldLabel : _(""),
+                fieldLabel : _(" "),
                 checked    : false
             },{
                 xtype      : "checkbox",
