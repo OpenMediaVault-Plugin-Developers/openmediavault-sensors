@@ -24,10 +24,14 @@ collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.co
 
 do_cpu1() {
 if [ $main_cpu != "" ]; then
+    case "$main_cpu" in
+        "sensors-nct6776"*) rrd=2 ;;
+        *) rrd=1 ;;
+    esac
     cat <<EOF >> $CPUoutfile
-  DEF:cpupavg=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:AVERAGE ${end}
-  DEF:cpupmin=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:MIN ${end}
-  DEF:cpupmax=\\\${DATA}/${main_cpu}/temperature-temp1.rrd:value:MAX ${end}
+  DEF:cpupavg=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
+  DEF:cpupmin=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MIN ${end}
+  DEF:cpupmax=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MAX ${end}
 EOF
 
 fi
@@ -119,10 +123,14 @@ done
 
 do_mb1() {
 if [ $mb_temp != "" ]; then
+    case "$mb_temp" in
+        "sensors-nct6776"*) rrd=1 ;;
+        *) rrd=2 ;;
+    esac
     cat <<EOF >> $MBoutfile
-  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:AVERAGE ${end}
-  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MIN ${end}
-  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MAX ${end}
+  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
+  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN ${end}
+  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX ${end}
   LINE1:mbtavg\\\${COLOR_MBT}:"   MB" ${end}
   GPRINT:mbtpmin:MIN:"%4.2lf Min" ${end}
   GPRINT:mbtavg:AVERAGE:"%4.2lf Avg" ${end}
@@ -135,10 +143,14 @@ fi
 
 do_mb1f() {
 if [ $mb_temp != "" ]; then
+    case "$mb_temp" in
+        "sensors-nct6776"*) rrd=1 ;;
+        *) rrd=2 ;;
+    esac
     cat <<EOF >> $MBoutfile
-  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:AVERAGE ${end}
-  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MIN ${end}
-  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp2.rrd:value:MAX ${end}
+  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
+  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN ${end}
+  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX ${end}
   CDEF:far1=9,5,/,mbtavg,*,32,+ ${end}
   CDEF:far2=9,5,/,mbtpmin,*,32,+ ${end}
   CDEF:far3=9,5,/,mbtpmax,*,32,+ ${end}
@@ -184,6 +196,8 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     # Like cores but ATM i don't know values
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6776*/temperature-temp2.rrd ]; then
+        main_cpu="sensors-nct6776*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
         main_cpu="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
@@ -252,6 +266,8 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
     # Get MB temp
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp2.rrd ]; then
         mb_temp="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6776*/temperature-temp1.rrd ]; then
+        mb_temp="sensors-nct6776*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp2.rrd ]; then
         mb_temp="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp2.rrd ]; then
@@ -280,6 +296,8 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
     # Get CPU FAN
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6776*/fanspeed-fan2.rrd ]; then
+        cpu_fan="sensors-nct6776*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/fanspeed-fan1.rrd ]; then
