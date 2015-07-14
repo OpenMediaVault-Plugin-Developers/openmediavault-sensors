@@ -166,10 +166,14 @@ fi
 
 do_fan1() {
 if [ $cpu_fan != "" ]; then
+    case "$cpu_fan" in
+        "sensors-nct6776"*) rrd=2 ;;
+        *) rrd=1 ;;
+    esac
     cat <<EOF >> $FANoutfile
-  DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:AVERAGE ${end}
-  DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:MIN ${end}
-  DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan1.rrd:value:MAX ${end}
+  DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
+  DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
+  DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
   LINE1:fan1avg\\\${COLOR_CPU_FAN}:"   CPU Fan" ${end}
   GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
   GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
@@ -255,11 +259,11 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     fi
 
     if [ "$y" = "1" ]; then
-        main=$cores
-    elif [ $main_cpu != "" ]; then
-        cd /var/lib/rrdcached/db/localhost/$main_cpu
-        main_cpu=`basename $PWD`
+        main_cpu=$cores
     fi
+
+    cd /var/lib/rrdcached/db/localhost/$main_cpu
+    main_cpu=`basename $PWD`
 fi
 
 if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
@@ -275,7 +279,7 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp2.rrd ]; then
         mb_temp="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/temperature-temp2.rrd ]; then
-        main_cpu="sensors-it8720*"
+        mb_temp="sensors-it8720*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/temperature-temp2.rrd ]; then
         mb_temp="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
@@ -305,7 +309,7 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
-        main_cpu="sensors-it8720*"
+        cpu_fan="sensors-it8720*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
