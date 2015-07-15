@@ -22,6 +22,21 @@ endeof='EOF'
 graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
 collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
 
+# Custom settings
+TABmain="$(omv_config_get "//services/sensors/tabmain")"
+TABcpuTEMP="$(omv_config_get "//services/sensors/tabcputemp")"
+TABmbTEMP="$(omv_config_get "//services/sensors/tabmbtemp")"
+TABcpuFAN="$(omv_config_get "//services/sensors/tabcpufan")"
+TABsysFAN="$(omv_config_get "//services/sensors/tabsysfan")"
+GRAPHcpuTITLE="$(omv_config_get "//services/sensors/graphcputitle")"
+GRAPHmbTITLE="$(omv_config_get "//services/sensors/graphmbtitle")"
+GRAPHcfanTITLE="$(omv_config_get "//services/sensors/graphcfantitle")"
+GRAPHsfanTITLE="$(omv_config_get "//services/sensors/graphsfantitle")"
+LINEcpuTEMP="$(omv_config_get "//services/sensors/linecputemp")"
+LINEcpuFAN="$(omv_config_get "//services/sensors/linecpufan")"
+LINEmbTEMP="$(omv_config_get "//services/sensors/linembtemp")"
+LINEsysFAN="$(omv_config_get "//services/sensors/linesysfan")"
+
 do_cpu1() {
 if [ $main_cpu != "" ]; then
     case "$main_cpu" in
@@ -56,7 +71,7 @@ done
 do_cpu3() {
 if [ $main_cpu != "" ]; then
     cat <<EOF >> $CPUoutfile
-  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
+  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"${LINEcpuTEMP}" ${end}
   GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
   GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
@@ -72,7 +87,7 @@ if [ $main_cpu != "" ]; then
   CDEF:farc1=9,5,/,cpupavg,*,32,+ ${end}
   CDEF:farc2=9,5,/,cpupmin,*,32,+ ${end}
   CDEF:farc3=9,5,/,cpupmax,*,32,+ ${end}
-  LINE1:farc1\\\${COLOR_CPU_PHYSICAL}:"   CPU" ${end}
+  LINE1:farc1\\\${COLOR_CPU_PHYSICAL}:"${LINEcpuTEMP}" ${end}
   GPRINT:farc2:MIN:"%4.2lf Min" ${end}
   GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:farc3:MAX:"%4.2lf Max" ${end}
@@ -131,7 +146,7 @@ if [ $mb_temp != "" ]; then
   DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
   DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN ${end}
   DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX ${end}
-  LINE1:mbtavg\\\${COLOR_MBT}:"   MB" ${end}
+  LINE1:mbtavg\\\${COLOR_MBT}:"${LINEmbTEMP}" ${end}
   GPRINT:mbtpmin:MIN:"%4.2lf Min" ${end}
   GPRINT:mbtavg:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:mbtpmax:MAX:"%4.2lf Max" ${end}
@@ -154,7 +169,7 @@ if [ $mb_temp != "" ]; then
   CDEF:far1=9,5,/,mbtavg,*,32,+ ${end}
   CDEF:far2=9,5,/,mbtpmin,*,32,+ ${end}
   CDEF:far3=9,5,/,mbtpmax,*,32,+ ${end}
-  LINE1:far1\\\${COLOR_MBT}:"   MB" ${end}
+  LINE1:far1\\\${COLOR_MBT}:"${LINEmbTEMP}" ${end}
   GPRINT:far2:MIN:"%4.2lf Min" ${end}
   GPRINT:far1:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:far3:MAX:"%4.2lf Max" ${end}
@@ -174,7 +189,7 @@ if [ $cpu_fan != "" ]; then
   DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
   DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
   DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
-  LINE1:fan1avg\\\${COLOR_CPU_FAN}:"   CPU Fan" ${end}
+  LINE1:fan1avg\\\${COLOR_CPU_FAN}:"${LINEcpuFAN}" ${end}
   GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
   GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
@@ -438,7 +453,7 @@ ${graph}
 ${starteof2}
 # <<< [openmediavault] sensors-script
 # Plugin: sensors
-TITLE_LOAD="CPU temperature"
+TITLE_LOAD="${GRAPHcpuTITLE}"
 COLOR_CPU_PHYSICAL="#00cc00" # green
 COLOR_CPU_CORE_0="#0000fd"   # blue
 COLOR_CPU_CORE_1="#ff0000"   # red
@@ -493,58 +508,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
-        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-/**
- * This file is part of OpenMediaVault.
- *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2014 Volker Theile
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * OpenMediaVault is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
- */
-// require("js/omv/workspace/panel/RrdGraph.js")
-
-/**
- * @class OMV.module.admin.diagnostic.system.plugin.Sensors
- * @derived OMV.workspace.panel.RrdGraph
- */
-Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
-        extend: "OMV.workspace.panel.RrdGraph",
-        alias: "omv.plugin.diagnostic.system.sensors",
-EOF
-
-        if [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
-            cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-        title: _("Temps"),
-        rrdGraphName: "sensors"
-});
-
-EOF
-
-        else
-            cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-        title: _("CPU Temp"),
-        rrdGraphName: "sensors"
-});
-
-EOF
-
-        fi
     fi
 
     # Make sure omv-mkgraph is clean
@@ -602,7 +565,7 @@ ${graph}
 ${starteof2}
 # <<< [openmediavault] mb-script
 # Plugin: mb
-TITLE_LOAD="MB temp"
+TITLE_LOAD="${GRAPHmbTITLE}"
 COLOR_MBT="#000000" # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
@@ -626,45 +589,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js ]; then
-        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js
-/**
- * This file is part of OpenMediaVault.
- *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2014 Volker Theile
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * OpenMediaVault is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
- */
-// require("js/omv/workspace/panel/RrdGraph.js")
-
-/**
- * @class OMV.module.admin.diagnostic.system.plugin.Mb
- * @derived OMV.workspace.panel.RrdGraph
- */
-Ext.define("OMV.module.admin.diagnostic.system.plugin.Mb", {
-        extend: "OMV.workspace.panel.RrdGraph",
-        alias: "omv.plugin.diagnostic.system.mb",
-
-        title: _("MB Temperature monitor"),
-        rrdGraphName: "mb"
-});
-
-EOF
     fi
 
     # Make sure omv-mkgraph is clean
@@ -722,7 +646,7 @@ ${graph}
 ${starteof2}
 # <<< [openmediavault] fan-script
 # Plugin: fan
-TITLE_LOAD="CPU fan speed"
+TITLE_LOAD="${GRAPHcfanTITLE}"
 COLOR_CPU_FAN="#000000" # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
@@ -742,45 +666,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    if [ ! -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
-        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
-/**
- * This file is part of OpenMediaVault.
- *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2014 Volker Theile
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * OpenMediaVault is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
- */
-// require("js/omv/workspace/panel/RrdGraph.js")
-
-/**
- * @class OMV.module.admin.diagnostic.system.plugin.Fan
- * @derived OMV.workspace.panel.RrdGraph
- */
-Ext.define("OMV.module.admin.diagnostic.system.plugin.Fan", {
-        extend: "OMV.workspace.panel.RrdGraph",
-        alias: "omv.plugin.diagnostic.system.fan",
-
-        title: _("CPU fan speed"),
-        rrdGraphName: "fan"
-});
-
-EOF
     fi
 
     # Make sure omv-mkgraph is clean
@@ -805,6 +690,93 @@ EOF
             /etc/init.d/collectd restart > /dev/null 2>&1
         fi
     fi
+fi
+
+#Create .js file.
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_get "//services/sensors/mbtemp")" = "1" -o "$(omv_config_get "//services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
+    cat <<EOF > /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+/**
+ * This file is part of OpenMediaVault.
+ *
+ * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+ * @author    Volker Theile <volker.theile@openmediavault.org>
+ * @copyright Copyright (c) 2009-2015 Volker Theile
+ *
+ * OpenMediaVault is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * OpenMediaVault is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ */
+// require("js/omv/Rpc.js")
+// require("js/omv/workspace/tab/Panel.js")
+
+/**
+ * @class OMV.module.admin.diagnostic.system.plugin.Sensors
+ * @derived OMV.workspace.tab.Panel
+ */
+Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
+        extend: "OMV.workspace.tab.Panel",
+        alias: "omv.plugin.diagnostic.system.sensors",
+
+        title: _("${TABmain}"),
+
+        initComponent: function() {
+                var me = this;
+                me.callParent(arguments);
+                // Add Sub Tabs.
+EOF
+
+    if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
+        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                                                title: "${TABcpuTEMP}",
+                                                rrdGraphName: "sensors"
+                                        }));
+EOF
+    fi
+
+    if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ]; then
+        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                                                title: "${TABmbTEMP}",
+                                                rrdGraphName: "mb"
+                                        }));
+EOF
+    fi
+
+    if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
+        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                                                title: "${TABcpuFAN}",
+                                                rrdGraphName: "fan"
+                                        }));
+EOF
+    fi
+
+    if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ]; then
+        cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                                                title: "${TABsysFAN}",
+                                                rrdGraphName: "sysfan"
+                                        }));
+EOF
+    fi
+
+    cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+    }
+});
+
+
+EOF
+
 fi
 
 #add these last

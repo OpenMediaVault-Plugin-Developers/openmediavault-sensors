@@ -52,8 +52,126 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 { name  : "sysfanenable", value : true }
             ],
             properties : "show"
+        },{
+            name       : [
+                "tabmain",
+            ],
+            conditions : [
+                { name  : "cpufanenable", value : false },
+                { name  : "sysfanenable", value : false },
+                { name  : "cpuenable", value : false },
+                { name  : "mbtemp", value : false }
+            ],
+            properties : "!show"
+        },{
+            name       : [
+                "tabcputemp",
+            ],
+            conditions : [
+                { name  : "cpuenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "tabcpufan",
+            ],
+            conditions : [
+                { name  : "cpufanenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "tabmbtemp",
+            ],
+            conditions : [
+                { name  : "mbtemp", value : true },
+                { name  : "jntemp", value : false }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "tabsysfan",
+            ],
+            conditions : [
+                { name  : "sysfanenable", value : true },
+                { name  : "jnfans", value : false }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "graphcputitle",
+            ],
+            conditions : [
+                { name  : "cpuenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "graphmbtitle",
+            ],
+            conditions : [
+                { name  : "mbtemp", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "graphcfantitle",
+            ],
+            conditions : [
+                { name  : "cpufanenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "graphsfantitle",
+            ],
+            conditions : [
+                { name  : "sysfanenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "linecputemp",
+            ],
+            conditions : [
+                { name  : "cpuenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "linecpufan",
+            ],
+            conditions : [
+                { name  : "cpufanenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "linembtemp",
+            ],
+            conditions : [
+                { name  : "mbtemp", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
+                "linesysfan",
+            ],
+            conditions : [
+                { name  : "sysfanenable", value : true }
+            ],
+            properties : "show"
         }]
     }],
+
+    initComponent: function() {
+        var me = this;
+        me.callParent(arguments);
+        me.on("select", function() {
+            OMV.confirmPageUnload = false;
+            document.location.reload();
+        }, me);
+    },
 
     getFormItems : function() {
         var me = this;
@@ -107,8 +225,145 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 fieldLabel : _("Fahrenheit"),
                 checked    : false
             }]
+                },{
+            xtype    : "fieldset",
+            title    : "Custom user settings",
+            defaults : {
+                labelSeparator : ""
+            },
+            items : [{
+                xtype: "textfield",
+                name: "tabmain",
+                fieldLabel: _("Main Tab Title"),
+                allowBlank: false,
+                value: 'OMV Sensors',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("The main tab title, other tabs (below) are sub tabs.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "tabcputemp",
+                fieldLabel: _("CPU Temp Tab Title"),
+                allowBlank: false,
+                value: 'CPU Temp',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used for the CPU temperature tab. Will also be title of combined temps.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "tabmbtemp",
+                fieldLabel: _("MB Temp Tab Title"),
+                allowBlank: false,
+                value: 'MotherBoard Temp',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used for the motherBoard temperature tab.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "tabcpufan",
+                fieldLabel: _("CPU Fan Tab Title"),
+                allowBlank: false,
+                value: 'CPU fan speed',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used for the CPU fan speed tab. Will also be title of combined fans.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "tabsysfan",
+                fieldLabel: _("SYS fan speed"),
+                allowBlank: false,
+                value: 'SYS fan speed',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used for the system fan speed tab.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "graphcputitle",
+                fieldLabel: _("CPU Temp Graph Title"),
+                allowBlank: false,
+                value: 'CPU temperature',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used on the CPU temperature graph. Will also be title of combined temps.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "graphmbtitle",
+                fieldLabel: _("Motherboard Temp Graph Title"),
+                allowBlank: false,
+                value: 'MB temp',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used on the Motherboard temperature graph.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "graphcfantitle",
+                fieldLabel: _("CPU Fan Graph Title"),
+                allowBlank: false,
+                value: 'CPU fan speed',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used on the CPU fan graph. Will also be title of combined fans.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "graphsfantitle",
+                fieldLabel: _("SYS Fan Graph Title"),
+                allowBlank: false,
+                value: 'System fan speed',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Title used on the System fan graph.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "linecputemp",
+                fieldLabel: _("Graph Temp CPU Label"),
+                allowBlank: false,
+                value: 'CPU',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("CPU Label used on the graph.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "linecpufan",
+                fieldLabel: _("Graph CPU Fan Label"),
+                allowBlank: false,
+                value: 'CPU Fan',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("CPU Fan Label used on the graph.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "linembtemp",
+                fieldLabel: _("Graph Motherboard Temp Label"),
+                allowBlank: false,
+                value: 'MB',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("Motherboard temperature label used on the graph.")
+                }]
+             }, {
+                xtype: "textfield",
+                name: "linesysfan",
+                fieldLabel: _("Graph System Fan Label"),
+                allowBlank: false,
+                value: 'SYS Fan',
+                plugins: [{
+                    ptype: "fieldinfo",
+                    text: _("URL to access RPC and web interface (http://localhost/&lt;URL&gt;/(rpc|web).")
+                }]
+            }]
         }];
-    },
+    }
 });
 
 OMV.WorkspaceManager.registerPanel({
@@ -118,3 +373,4 @@ OMV.WorkspaceManager.registerPanel({
     position  : 10,
     className : "OMV.module.admin.service.sensors.Settings"
 });
+

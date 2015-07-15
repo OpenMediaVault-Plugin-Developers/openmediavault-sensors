@@ -71,13 +71,26 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             );
         }
 
-        $object["cpuenable"]     = boolval($object["cpuenable"]);
-        $object["sysfanenable"]  = boolval($object["sysfanenable"]);
-        $object["cpufanenable"]  = boolval($object["cpufanenable"]);
-        $object["mbtemp"]        = boolval($object["mbtemp"]);
-        $object["fheit"]         = boolval($object["fheit"]);
-        $object["jntemp"]        = boolval($object["jntemp"]);
-        $object["jnfans"]        = boolval($object["jnfans"]);
+        $object["cpuenable"]      = boolval($object["cpuenable"]);
+        $object["sysfanenable"]   = boolval($object["sysfanenable"]);
+        $object["cpufanenable"]   = boolval($object["cpufanenable"]);
+        $object["mbtemp"]         = boolval($object["mbtemp"]);
+        $object["fheit"]          = boolval($object["fheit"]);
+        $object["jntemp"]         = boolval($object["jntemp"]);
+        $object["jnfans"]         = boolval($object["jnfans"]);
+        $object["tabmain"]        = boolval($object["tabmain"]);
+        $object["tabcputemp"]     = boolval($object["tabcputemp"]);
+        $object["tabmbtemp"]      = boolval($object["tabmbtemp"]);
+        $object["tabcpufan"]      = boolval($object["tabcpufan"]);
+        $object["tabsysfan"]      = boolval($object["tabsysfan"]);
+        $object["graphcputitle"]  = boolval($object["graphcputitle"]);
+        $object["graphmbtitle"]   = boolval($object["graphmbtitle"]);
+        $object["graphcfantitle"] = boolval($object["graphcfantitle"]);
+        $object["graphsfantitle"] = boolval($object["graphsfantitle"]);
+        $object["linecputemp"]    = boolval($object["linecputemp"]);
+        $object["linecpufan"]     = boolval($object["linecpufan"]);
+        $object["linembtemp"]     = boolval($object["linembtemp"]);
+        $object["linesysfan"]     = boolval($object["linesysfan"]);
 
         return $object;
     }
@@ -101,7 +114,20 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
                     "mbtemp"          : { "type" : "boolean" },
                     "fheit"           : { "type" : "boolean" },
                     "jntemp"          : { "type" : "boolean" },
-                    "jnfans"          : { "type" : "boolean" }
+                    "jnfans"          : { "type" : "boolean" },
+                    "tabmain"         : { "type" : "string" },
+                    "tabcputemp"      : { "type" : "string" },
+                    "tabmbtemp"       : { "type" : "string" },
+                    "tabcpufan"       : { "type" : "string" },
+                    "tabsysfan"       : { "type" : "string" },
+                    "graphcputitle"   : { "type" : "string" },
+                    "graphmbtitle"    : { "type" : "string" },
+                    "graphcfantitle"  : { "type" : "string" },
+                    "graphsfantitle"  : { "type" : "string" },
+                    "linecputemp"     : { "type" : "string" },
+                    "linecpufan"      : { "type" : "string" },
+                    "linembtemp"      : { "type" : "string" },
+                    "linesysfan"      : { "type" : "string" }
                 }
             }'
         );
@@ -113,7 +139,20 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             "mbtemp"          => array_boolval($params, "mbtemp"),
             "fheit"           => array_boolval($params, "fheit"),
             "jntemp"          => array_boolval($params, "jntemp"),
-            "jnfans"          => array_boolval($params, "jnfans")
+            "jnfans"          => array_boolval($params, "jnfans"),
+            "tabmain"         => $params["tabmain"],
+            "tabcputemp"      => $params["tabcputemp"],
+            "tabmbtemp"       => $params["tabmbtemp"],
+            "tabcpufan"       => $params["tabcpufan"],
+            "tabsysfan"       => $params["tabsysfan"],
+            "graphcputitle"   => $params["graphcputitle"],
+            "graphmbtitle"    => $params["graphmbtitle"],
+            "graphcfantitle"  => $params["graphcfantitle"],
+            "graphsfantitle"  => $params["graphsfantitle"],
+            "linecputemp"     => $params["linecputemp"],
+            "linecpufan"      => $params["linecpufan"],
+            "linembtemp"      => $params["linembtemp"],
+            "linesysfan"      => $params["linesysfan"]
         );
 
         if ($xmlConfig->replace($this->getXpath(), $object) === false) {

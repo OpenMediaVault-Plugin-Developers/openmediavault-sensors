@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.9) TESTING; urgency=low
+
+  * Custom Options added
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 12 Jul 2015 18:55:51 -0000
+
 openmediavault-sensors (1.0.8) TESTING; urgency=low
 
   * Add nct6776 hardware
