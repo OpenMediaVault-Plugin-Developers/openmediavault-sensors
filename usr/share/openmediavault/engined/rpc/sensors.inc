@@ -78,19 +78,19 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
         $object["fheit"]          = boolval($object["fheit"]);
         $object["jntemp"]         = boolval($object["jntemp"]);
         $object["jnfans"]         = boolval($object["jnfans"]);
-        $object["tabmain"]        = boolval($object["tabmain"]);
-        $object["tabcputemp"]     = boolval($object["tabcputemp"]);
-        $object["tabmbtemp"]      = boolval($object["tabmbtemp"]);
-        $object["tabcpufan"]      = boolval($object["tabcpufan"]);
-        $object["tabsysfan"]      = boolval($object["tabsysfan"]);
-        $object["graphcputitle"]  = boolval($object["graphcputitle"]);
-        $object["graphmbtitle"]   = boolval($object["graphmbtitle"]);
-        $object["graphcfantitle"] = boolval($object["graphcfantitle"]);
-        $object["graphsfantitle"] = boolval($object["graphsfantitle"]);
-        $object["linecputemp"]    = boolval($object["linecputemp"]);
-        $object["linecpufan"]     = boolval($object["linecpufan"]);
-        $object["linembtemp"]     = boolval($object["linembtemp"]);
-        $object["linesysfan"]     = boolval($object["linesysfan"]);
+        $object["tabmain"]        = $object["tabmain"];
+        $object["tabcputemp"]     = $object["tabcputemp"];
+        $object["tabmbtemp"]      = $object["tabmbtemp"];
+        $object["tabcpufan"]      = $object["tabcpufan"];
+        $object["tabsysfan"]      = $object["tabsysfan"];
+        $object["graphcputitle"]  = $object["graphcputitle"];
+        $object["graphmbtitle"]   = $object["graphmbtitle"];
+        $object["graphcfantitle"] = $object["graphcfantitle"];
+        $object["graphsfantitle"] = $object["graphsfantitle"];
+        $object["linecputemp"]    = $object["linecputemp"];
+        $object["linecpufan"]     = $object["linecpufan"];
+        $object["linembtemp"]     = $object["linembtemp"];
+        $object["linesysfan"]     = $object["linesysfan"];
 
         return $object;
     }
