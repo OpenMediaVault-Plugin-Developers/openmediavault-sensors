@@ -164,18 +164,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
         }]
     }],
 
-    initComponent: function() {
-        var me = this;
-        me.callParent(arguments);
-        me.on("select", function() {
-            OMV.confirmPageUnload = false;
-            document.location.reload();
-        }, me);
-    },
-
     getFormItems : function() {
-        var me = this;
-
         return [{
             xtype    : "fieldset",
             title    : "Items to monitor - Remember to refresh after saving",
