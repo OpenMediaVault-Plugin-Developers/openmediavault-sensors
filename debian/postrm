@@ -9,11 +9,58 @@ case "$1" in
         purge)
             omv_config_delete "//services/sensors"
 
-            rm /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js -Rf
-            rm /usr/share/openmediavault/mkconf/collectd.d/sensors -Rf
-            sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
-            #Need a better way to clear this entry
-            sed -n -i '/# Plugin: sensors/q;p' /usr/sbin/omv-mkgraph
+            if [ -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
+                rm -f /usr/share/openmediavault/mkconf/collectd.d/sensors
+            fi
+
+            if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
+            fi
+
+            if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+                sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+            fi
+            sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
+
+            if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
+                rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
+            fi
+
+            if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js
+            fi
+
+            if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
+                sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
+            fi
+            sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
+
+            if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
+                rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
+            fi
+
+            if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
+            fi
+
+            if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
+                sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
+            fi
+            sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
+
+            if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
+                rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
+            fi
+
+            if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js
+            fi
+
+            if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
+                sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
+            fi
+            sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
+
             rm /var/lib/rrdcached/db/localhost/sensors-* -Rf
             rm /usr/sbin/omv-sensors-detect -Rf
             rm /var/lib/openmediavault/rrd/sensors-*.png -Rf
