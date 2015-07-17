@@ -19,6 +19,22 @@ case "$1" in
             omv_config_add_element "${SERVICE_XPATH}" "mbtemp" "0"
         fi
 
+        if ! omv_config_exists "${SERVICE_XPATH}/tabmain"; then
+            omv_config_add_element "${SERVICE_XPATH}" "tabmain" "OMV Sensors"
+            omv_config_add_element "${SERVICE_XPATH}" "tabcputemp" "CPU Temp"
+            omv_config_add_element "${SERVICE_XPATH}" "tabmbtemp" "MotherBoard Temp"
+            omv_config_add_element "${SERVICE_XPATH}" "tabcpufan" "CPU fan speed"
+            omv_config_add_element "${SERVICE_XPATH}" "tabsysfan" "SYS fan speed"
+            omv_config_add_element "${SERVICE_XPATH}" "graphcputitle" "CPU temperature"
+            omv_config_add_element "${SERVICE_XPATH}" "graphmbtitle" "MB temperature"
+            omv_config_add_element "${SERVICE_XPATH}" "graphcfantitle" "CPU fan speed"
+            omv_config_add_element "${SERVICE_XPATH}" "graphsfantitle" "System fan speed"
+            omv_config_add_element "${SERVICE_XPATH}" "linecputemp" "CPU"
+            omv_config_add_element "${SERVICE_XPATH}" "linecpufan" "CPU Fan"
+            omv_config_add_element "${SERVICE_XPATH}" "linembtemp" "MB"
+            omv_config_add_element "${SERVICE_XPATH}" "linesysfan" "SYS Fan"
+        fi
+
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
             /usr/sbin/omv-sensors-detect > /dev/null 2>&1
             cat <<EOF >> /etc/collectd/collectd.conf

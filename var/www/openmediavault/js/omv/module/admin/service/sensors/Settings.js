@@ -178,7 +178,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
 
         return [{
             xtype    : "fieldset",
-            title    : "Items to monitor",
+            title    : "Items to monitor - Remember to refresh after saving",
             defaults : {
                 labelSeparator : ""
             },
@@ -296,7 +296,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 name: "graphmbtitle",
                 fieldLabel: _("Motherboard Temp Graph Title"),
                 allowBlank: false,
-                value: 'MB temp',
+                value: 'MB temperature',
                 plugins: [{
                     ptype: "fieldinfo",
                     text: _("Title used on the Motherboard temperature graph.")
@@ -359,7 +359,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 value: 'SYS Fan',
                 plugins: [{
                     ptype: "fieldinfo",
-                    text: _("URL to access RPC and web interface (http://localhost/&lt;URL&gt;/(rpc|web).")
+                    text: _("System Fan label used on the graph.")
                 }]
             }]
         }];

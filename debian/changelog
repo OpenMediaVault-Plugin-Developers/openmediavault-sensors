@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.10) TESTING; urgency=low
+
+  * Fixed not saving
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 17 Jul 2015 16:18:51 -0000
+
 openmediavault-sensors (1.0.9) TESTING; urgency=low
 
   * Custom Options added
