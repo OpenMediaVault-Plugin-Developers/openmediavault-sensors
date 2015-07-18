@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.12) TESTING; urgency=low
+
+  * Re-fixed error where no main CPU is found
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 18 Jul 2015 16:29:51 -0000
+
 openmediavault-sensors (1.0.11) TESTING; urgency=low
 
   * Added fschds HW

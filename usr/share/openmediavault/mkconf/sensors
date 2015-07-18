@@ -282,7 +282,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu=$cores
     fi
 
-    if [ $core != "" ]; then
+    if [ $main_cpu != "" ]; then
         cd /var/lib/rrdcached/db/localhost/$main_cpu
         main_cpu=`basename $PWD`
     fi
