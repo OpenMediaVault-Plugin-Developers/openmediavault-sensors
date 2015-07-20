@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.13) TESTING; urgency=low
+
+  * Enable system fan monitor
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 20 Jul 2015 11:30:51 -0000
+
 openmediavault-sensors (1.0.12) TESTING; urgency=low
 
   * Re-fixed error where no main CPU is found

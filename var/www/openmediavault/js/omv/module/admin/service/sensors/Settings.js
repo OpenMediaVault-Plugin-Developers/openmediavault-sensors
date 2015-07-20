@@ -54,6 +54,14 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
             properties : "show"
         },{
             name       : [
+                "shcore",
+            ],
+            conditions : [
+                { name  : "cpuenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
                 "tabmain",
             ],
             conditions : [
@@ -204,7 +212,7 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
             },{
                 xtype      : "checkbox",
                 name       : "sysfanenable",
-                boxLabel   : _("Will monitor system fan speed - Not implemented"),
+                boxLabel   : _("Will monitor system fan speed"),
                 fieldLabel : _("SYS Fan Speed"),
                 checked    : false
             },{
