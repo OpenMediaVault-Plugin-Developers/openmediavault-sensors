@@ -179,6 +179,12 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 checked    : false
             },{
                 xtype      : "checkbox",
+                name       : "shcore",
+                boxLabel   : _("Will also monitor CPU cores Temperatures"),
+                fieldLabel : _("Show Cores"),
+                checked    : false
+            },{
+                xtype      : "checkbox",
                 name       : "mbtemp",
                 boxLabel   : _("Will monitor Motherboard Temperature"),
                 fieldLabel : _("MB Temperature"),

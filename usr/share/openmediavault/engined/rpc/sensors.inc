@@ -78,6 +78,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
         $object["fheit"]          = boolval($object["fheit"]);
         $object["jntemp"]         = boolval($object["jntemp"]);
         $object["jnfans"]         = boolval($object["jnfans"]);
+        $object["shcore"]         = boolval($object["shcore"]);
         $object["tabmain"]        = $object["tabmain"];
         $object["tabcputemp"]     = $object["tabcputemp"];
         $object["tabmbtemp"]      = $object["tabmbtemp"];
@@ -115,6 +116,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
                     "fheit"           : { "type" : "boolean" },
                     "jntemp"          : { "type" : "boolean" },
                     "jnfans"          : { "type" : "boolean" },
+                    "shcore"          : { "type" : "boolean" },
                     "tabmain"         : { "type" : "string" },
                     "tabcputemp"      : { "type" : "string" },
                     "tabmbtemp"       : { "type" : "string" },
@@ -140,6 +142,7 @@ class OMVRpcServiceSensors extends OMVRpcServiceAbstract
             "fheit"           => array_boolval($params, "fheit"),
             "jntemp"          => array_boolval($params, "jntemp"),
             "jnfans"          => array_boolval($params, "jnfans"),
+            "shcore"          => array_boolval($params, "shcore"),
             "tabmain"         => $params["tabmain"],
             "tabcputemp"      => $params["tabcputemp"],
             "tabmbtemp"       => $params["tabmbtemp"],
