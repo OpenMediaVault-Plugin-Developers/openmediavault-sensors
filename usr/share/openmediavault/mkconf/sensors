@@ -38,7 +38,7 @@ LINEmbTEMP="$(omv_config_get "//services/sensors/linembtemp")"
 LINEsysFAN="$(omv_config_get "//services/sensors/linesysfan")"
 
 do_cpu1() {
-if [ $main_cpu != "" ]; then
+if [ ! -z $main_cpu ]; then
     case "$main_cpu" in
         "sensors-nct6776"*) rrd=2 ;;
         *) rrd=1 ;;
@@ -69,7 +69,7 @@ done
 }
 
 do_cpu3() {
-if [ $main_cpu != "" ]; then
+if [ ! -z $main_cpu ]; then
     cat <<EOF >> $CPUoutfile
   LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"${LINEcpuTEMP}" ${end}
   GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
@@ -82,7 +82,7 @@ fi
 }
 
 do_cpu3f() {
-if [ $main_cpu != "" ]; then
+if [ ! -z $main_cpu ]; then
     cat <<EOF >> $CPUoutfile
   CDEF:farc1=9,5,/,cpupavg,*,32,+ ${end}
   CDEF:farc2=9,5,/,cpupmin,*,32,+ ${end}
@@ -137,7 +137,7 @@ done
 }
 
 do_mb1() {
-if [ $mb_temp != "" ]; then
+if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
@@ -158,7 +158,7 @@ fi
 }
 
 do_mb1f() {
-if [ $mb_temp != "" ]; then
+if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
@@ -182,7 +182,7 @@ fi
 }
 
 do_fan1() {
-if [ $cpu_fan != "" ]; then
+if [ ! -z $cpu_fan ]; then
     case "$cpu_fan" in
         "sensors-nct6776"*) rrd=2 ;;
         "sensors-fschds-"*) rrd=2 ;;
@@ -203,7 +203,7 @@ fi
 }
 
 do_sys1() {
-if [ $sys_fan != "" ]; then
+if [ ! -z $sys_fan ]; then
     case "$sys_fan" in
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
@@ -262,7 +262,9 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     fi
 
     # Get Cores
-    if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
+    if [ -e /var/lib/rrdcached/db/localhost/coretemp-isa-0000 ]; then
+        core="coretemp-isa-0000"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
         core="sensors-coretemp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then
         core="sensors-via686a*"
@@ -282,7 +284,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         core=""
     fi
 
-    if [ $core != "" ]; then
+    if [ ! -z $core ]; then
         cd /var/lib/rrdcached/db/localhost/$core
         cores=`basename $PWD`
         # Other Method to get cores
@@ -303,7 +305,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu=$cores
     fi
 
-    if [ $main_cpu != "" ]; then
+    if [ ! -z $main_cpu ]; then
         cd /var/lib/rrdcached/db/localhost/$main_cpu
         main_cpu=`basename $PWD`
     fi
@@ -335,7 +337,7 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
         mb_temp=""
     fi
 
-	if [ $mb_temp != "" ]; then
+	if [ ! -z $mb_temp ]; then
         cd /var/lib/rrdcached/db/localhost/$mb_temp
         mb_temp=`basename $PWD`
     fi
@@ -367,7 +369,7 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan=""
     fi
 
-    if [ $cpu_fan != "" ]; then
+    if [ ! -z $cpu_fan ]; then
         cd /var/lib/rrdcached/db/localhost/$cpu_fan
         cpu_fan=`basename $PWD`
     fi
@@ -399,7 +401,7 @@ if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
         sys_fan=""
     fi
 
-    if [ $sys_fan != "" ]; then
+    if [ ! -z $sys_fan ]; then
         cd /var/lib/rrdcached/db/localhost/$sys_fan
         sys_fan=`basename $PWD`
     fi
@@ -545,7 +547,7 @@ EOF
             fi
         fi
 
-        if [ $core != "" ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
+        if [ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
             do_cpu2;
         fi
 
@@ -555,7 +557,7 @@ EOF
             do_cpu3;
         fi
 
-        if [ $core != "" ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
+        if [ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
             if [ "$(omv_config_get "//services/sensors/fheit")" = "1" ]; then
                 do_cpu4f;
             else
