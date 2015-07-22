@@ -209,6 +209,9 @@ if [ ! -z $sys_fan ]; then
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
+    if [ ! -z "$(omv_config_get "//services/sensors/sysoffset")" ]; then
+        rrd=$rrd+"$(omv_config_get "//services/sensors/sysoffset")"
+    fi
     cat <<EOF >> $FANoutfile
   DEF:sfan1avg=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
   DEF:sfan1pmin=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
@@ -262,8 +265,8 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     fi
 
     # Get Cores
-    if [ -e /var/lib/rrdcached/db/localhost/coretemp-isa-0000 ]; then
-        core="coretemp-isa-0000"
+    if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0000 ]; then
+        core="sensors-coretemp-isa-0000"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp* ]; then
         core="sensors-coretemp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-via686a* ]; then

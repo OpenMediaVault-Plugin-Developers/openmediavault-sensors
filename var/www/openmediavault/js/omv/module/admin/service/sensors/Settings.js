@@ -107,6 +107,14 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
             properties : "show"
         },{
             name       : [
+                "sysoffset",
+            ],
+            conditions : [
+                { name  : "sysfanenable", value : true }
+            ],
+            properties : "show"
+        },{
+            name       : [
                 "graphcputitle",
             ],
             conditions : [
@@ -215,6 +223,12 @@ Ext.define("OMV.module.admin.service.sensors.Settings", {
                 boxLabel   : _("Will monitor system fan speed"),
                 fieldLabel : _("SYS Fan Speed"),
                 checked    : false
+            },{
+                xtype      : "textfield",
+                name       : "sysoffset",
+                boxLabel   : _("Add value to get correct system fan (-/+)"),
+                fieldLabel : _("SYS Fan Offset"),
+                allowBlank : true
             },{
                 xtype      : "checkbox",
                 name       : "jnfans",
