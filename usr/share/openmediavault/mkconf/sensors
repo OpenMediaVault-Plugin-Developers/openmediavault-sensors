@@ -210,9 +210,9 @@ if [ ! -z $sys_fan ]; then
         *) rrd=2 ;;
     esac
     if [ ! -z "$(omv_config_get "//services/sensors/sysoffset")" ]; then
-        rrd=$rrd+"$(omv_config_get "//services/sensors/sysoffset")"
+        rrd=$(echo $rrd + "$(omv_config_get "//services/sensors/sysoffset")" | bc)
     fi
-    cat <<EOF >> $FANoutfile
+    cat <<EOF >> $SYSoutfile
   DEF:sfan1avg=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
   DEF:sfan1pmin=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
   DEF:sfan1pmax=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
@@ -481,7 +481,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
 LoadPlugin sensors
 
 EOF
-            /etc/init.d/collectd restart > /dev/null 2>&1
+            #/etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
         cat <<EOF > $CPUoutfile
@@ -602,7 +602,7 @@ LoadPlugin mb
 
 EOF
 
-            /etc/init.d/collectd restart > /dev/null 2>&1
+            #/etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
         cat <<EOF > $MBoutfile
@@ -687,7 +687,7 @@ LoadPlugin fan
 
 EOF
 
-            /etc/init.d/collectd restart > /dev/null 2>&1
+            #/etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
         cat <<EOF > $FANoutfile
@@ -773,7 +773,7 @@ LoadPlugin sys
 
 EOF
 
-            /etc/init.d/collectd restart > /dev/null 2>&1
+            #/etc/init.d/collectd restart > /dev/null 2>&1
         fi
 
         cat <<EOF > $SYSoutfile
@@ -850,7 +850,7 @@ LoadPlugin sys
 
 EOF
 
-            /etc/init.d/collectd restart > /dev/null 2>&1
+            #/etc/init.d/collectd restart > /dev/null 2>&1
         fi
     fi
 fi
