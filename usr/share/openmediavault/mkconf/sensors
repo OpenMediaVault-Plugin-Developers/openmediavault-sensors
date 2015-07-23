@@ -140,6 +140,7 @@ do_mb1() {
 if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
         "sensors-nct6776"*) rrd=1 ;;
+        "sensors-it8771"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -161,6 +162,7 @@ do_mb1f() {
 if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
         "sensors-nct6776"*) rrd=1 ;;
+        "sensors-it8771"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -210,7 +212,7 @@ if [ ! -z $sys_fan ]; then
         *) rrd=2 ;;
     esac
     if [ ! -z "$(omv_config_get "//services/sensors/sysoffset")" ]; then
-        rrd=$(echo $rrd + "$(omv_config_get "//services/sensors/sysoffset")" | bc)
+        rrd=$(echo "$(($rrd+$(omv_config_get "//services/sensors/sysoffset")))")
     fi
     cat <<EOF >> $SYSoutfile
   DEF:sfan1avg=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
@@ -248,12 +250,12 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu="sensors-fschds-*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
         main_cpu="sensors-axp20_mfd*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+        main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it87*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it87*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83627hf*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
-        main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720* ]; then
         main_cpu="sensors-it8720*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then

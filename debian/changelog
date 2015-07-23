@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.16) TESTING; urgency=low
+
+  * Change Offset calculation for system fan
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 23 Jul 2015 11:26:51 -0000
+
 openmediavault-sensors (1.0.15) TESTING; urgency=low
 
   * Add Offset for system fan
