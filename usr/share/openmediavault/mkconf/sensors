@@ -66,6 +66,21 @@ EOF
     fi
     x=$((x + 1))
 done
+
+if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
+    for items in $cores_no1;
+    do
+        if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+            cat <<EOF >> $CPUoutfile
+  DEF:cpuc$((x - y))avg=\\\${DATA}/${cores1}/${items}:value:AVERAGE ${end}
+  DEF:cpuc$((x - y))min=\\\${DATA}/${cores1}/${items}:value:MIN ${end}
+  DEF:cpuc$((x - y))max=\\\${DATA}/${cores1}/${items}:value:MAX ${end}
+EOF
+
+        fi
+        x=$((x + 1))
+    done
+fi
 }
 
 do_cpu3() {
@@ -113,6 +128,23 @@ EOF
     fi
     x=$((x + 1))
 done
+
+if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
+    for items in $cores_no1;
+    do
+        if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+            cat <<EOF >> $CPUoutfile
+  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
+  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+        fi
+        x=$((x + 1))
+    done
+fi
 }
 
 do_cpu4f() {
@@ -134,6 +166,26 @@ EOF
     fi
     x=$((x + 1))
 done
+
+if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
+    for items in $cores_no1;
+    do
+        if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
+            cat <<EOF >> $CPUoutfile
+  CDEF:far$((x - y))avg=9,5,/,cpuc$((x - y))avg,*,32,+ ${end}
+  CDEF:far$((x - y))min=9,5,/,cpuc$((x - y))min,*,32,+ ${end}
+  CDEF:far$((x - y))max=9,5,/,cpuc$((x - y))max,*,32,+ ${end}
+  LINE1:far$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
+  GPRINT:far$((x - y))min:MIN:"%4.2lf Min" ${end}
+  GPRINT:far$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:far$((x - y))max:MAX:"%4.2lf Max" ${end}
+  GPRINT:far$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+        fi
+        x=$((x + 1))
+    done
+fi
 }
 
 do_mb1() {
@@ -296,6 +348,12 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         cpucore1=`cat /proc/cpuinfo | grep -m1 "cpu cores" | cut -d ":" -f2`
         cpucore2=`ls -l temp* | grep ^- | wc -l`
         cores_no=`ls temp* | xargs -n1 basename`
+
+        if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
+            cd /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001
+            cores1=`basename $PWD`
+            cores_no1=`ls temp* | xargs -n1 basename`
+        fi
 
         if [ "$cpucore1" = "" ]; then
             cpucore1=1
