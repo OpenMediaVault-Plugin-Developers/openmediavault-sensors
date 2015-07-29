@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.17) TESTING; urgency=low
+
+  * Fix for enabled sensors that do not exist
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 29 Jul 2015 15:13:51 -0000
+
 openmediavault-sensors (1.0.16) TESTING; urgency=low
 
   * Change Offset calculation for system fan

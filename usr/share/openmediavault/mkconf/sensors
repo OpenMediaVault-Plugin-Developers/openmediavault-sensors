@@ -529,14 +529,10 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_g
     /usr/sbin/omv-sensors-detect > /dev/null 2>&1
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
-    if [ "$core" = "" ] && [ "$main_cpu" = "" ]; then
-        exit 0
-    fi
-
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ $core != "" ] && [ $main_cpu != "" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            /usr/sbin/omv-sensors-detect > /dev/null 2>&1
+            # /usr/sbin/omv-sensors-detect > /dev/null 2>&1
             cat <<EOF >> /etc/collectd/collectd.conf
 LoadPlugin sensors
 
@@ -650,11 +646,7 @@ EOF
     $CPUoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ]; then
-    if [ "$mb_temp" = "" ]; then
-        exit 0
-    fi
-
+if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ] && [ $mb_temp != "" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
         if ! grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
             cat <<EOF >> /etc/collectd/collectd.conf
@@ -735,11 +727,7 @@ EOF
     $MBoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
-    if [ "$cpu_fan" = "" ]; then
-        exit 0
-    fi
-
+if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ] && [ $cpu_fan != "" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
         if ! grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
             cat <<EOF >> /etc/collectd/collectd.conf
@@ -821,11 +809,7 @@ EOF
     $FANoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ]; then
-    if [ "$sys_fan" = "" ]; then
-        exit 0
-    fi
-
+if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ] && [ $sys_fan != "" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
         if ! grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
             cat <<EOF >> /etc/collectd/collectd.conf
@@ -900,19 +884,6 @@ EOF
 
     chmod +x $SYSoutfile
     $SYSoutfile
-fi
-
-if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
-    if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
-        if ! grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin sys
-
-EOF
-
-            #/etc/init.d/collectd restart > /dev/null 2>&1
-        fi
-    fi
 fi
 
 #Create .js file.
