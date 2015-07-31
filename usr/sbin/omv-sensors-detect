@@ -2806,10 +2806,10 @@ sub initialize_kernel_version
 	chomp($kernel_arch = `uname -m`);
 
 	# We only support kernels >= 2.6.5
-	if (!kernel_version_at_least(2, 6, 5)) {
-		print "Kernel version is unsupported (too old, >= 2.6.5 needed)\n";
-		exit -1;
-	}
+	#if (!kernel_version_at_least(2, 6, 5)) {
+	#	print "Kernel version is unsupported (too old, >= 2.6.5 needed)\n";
+	#	exit -1;
+	#}
 }
 
 sub print_kernel_version
