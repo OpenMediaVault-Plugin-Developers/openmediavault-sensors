@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.18) TESTING; urgency=low
+
+  * Update omv-sensors-detect
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 31 Jul 2015 20:03:51 -0000
+
 openmediavault-sensors (1.0.17) TESTING; urgency=low
 
   * Fix for enabled sensors that do not exist

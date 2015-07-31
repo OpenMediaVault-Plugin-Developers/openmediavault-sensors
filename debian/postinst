@@ -36,7 +36,7 @@ case "$1" in
         fi
 
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            /usr/sbin/omv-sensors-detect > /dev/null 2>&1
+            /usr/sbin/omv-sensors-detect --auto > /dev/null 2>&1
             cat <<EOF >> /etc/collectd/collectd.conf
 LoadPlugin sensors
 
