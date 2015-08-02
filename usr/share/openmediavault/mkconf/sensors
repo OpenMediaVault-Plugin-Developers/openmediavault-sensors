@@ -472,7 +472,7 @@ if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-it8720*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/fanspeed-fan2.rrd ]; then
-        cpu_fan="sensors-it8771*"
+        sys_fan="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
@@ -548,7 +548,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_g
     /usr/sbin/omv-sensors-detect --auto > /dev/null 2>&1
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $core ] && [ ! -z $main_cpu ]; then
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
             # /usr/sbin/omv-sensors-detect > /dev/null 2>&1
