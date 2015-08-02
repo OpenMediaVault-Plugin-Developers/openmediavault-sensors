@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.19) TESTING; urgency=low
+
+  * Fix it8771 detection
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 02 Aug 2015 11:42:51 -0000
+
 openmediavault-sensors (1.0.18) TESTING; urgency=low
 
   * Update omv-sensors-detect

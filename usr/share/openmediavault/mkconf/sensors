@@ -309,7 +309,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu="sensors-fschds-*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
         main_cpu="sensors-axp20_mfd*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp* ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/temperature-temp1.rrd ]; then
         main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it8718*"
@@ -403,6 +403,8 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
         mb_temp="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
         mb_temp="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/temperature-temp1.rrd ]; then
+        mb_temp="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
         mb_temp=""
     else
@@ -433,6 +435,8 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-it8720*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
@@ -467,6 +471,8 @@ if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
         sys_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-it8720*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/fanspeed-fan2.rrd ]; then
+        cpu_fan="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
