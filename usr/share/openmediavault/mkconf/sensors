@@ -411,7 +411,7 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
         mb_temp=""
     fi
 
-	if [ ! -z $mb_temp ]; then
+    if [ ! -z $mb_temp ]; then
         cd /var/lib/rrdcached/db/localhost/$mb_temp
         mb_temp=`basename $PWD`
     fi
