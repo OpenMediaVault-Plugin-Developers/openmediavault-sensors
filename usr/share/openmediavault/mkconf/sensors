@@ -16,8 +16,6 @@ SYSoutfile="/usr/share/openmediavault/mkconf/collectd.d/sys"
 end='\'
 starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
 starteof1='cat <<EOF >> ${OMV_COLLECTD_CONFIG}'
-statment1='if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then'
-#statment2='if ! grep -q "LoadPlugin sensors" "$OMV_COLLECTD_CONFIG"; then'
 endeof='EOF'
 graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
 collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
@@ -551,7 +549,6 @@ fi
 if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            # /usr/sbin/omv-sensors-detect > /dev/null 2>&1
             cat <<EOF >> /etc/collectd/collectd.conf
 LoadPlugin sensors
 
@@ -588,11 +585,6 @@ set -e
 
 ${collected}
 ${graph}
-
-#${starteof1}
-#LoadPlugin sensors
-#
-#$endeof
 
 ${starteof2}
 # <<< [openmediavault] sensors-script
@@ -652,13 +644,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    # Make sure omv-mkgraph is clean
-    sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
-
-    if ! egrep "^LoadPlugin sensors" /etc/collectd/collectd.conf 2> /dev/null; then
-        echo -e "LoadPlugin sensors\n" >> /etc/collectd/collectd.conf
     fi
 
     chmod +x $CPUoutfile
@@ -733,13 +718,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    # Make sure omv-mkgraph is clean
-    sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
-
-    if ! egrep "^LoadPlugin mb" /etc/collectd/collectd.conf 2> /dev/null; then
-        echo -e "LoadPlugin mb\n" >> /etc/collectd/collectd.conf
     fi
 
     chmod +x $MBoutfile
@@ -817,13 +795,6 @@ EOF
 
     fi
 
-    # Make sure omv-mkgraph is clean
-    sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
-
-    if ! egrep "^LoadPlugin fan" /etc/collectd/collectd.conf 2> /dev/null; then
-        echo -e "LoadPlugin fan\n" >> /etc/collectd/collectd.conf
-    fi
-
     chmod +x $FANoutfile
     $FANoutfile
 fi
@@ -892,13 +863,6 @@ ${starteof2}
 ${endeof}
 EOF
 
-    fi
-
-    # Make sure omv-mkgraph is clean
-    sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
-
-    if ! egrep "^LoadPlugin sys" /etc/collectd/collectd.conf 2> /dev/null; then
-        echo -e "LoadPlugin sys\n" >> /etc/collectd/collectd.conf
     fi
 
     chmod +x $SYSoutfile
