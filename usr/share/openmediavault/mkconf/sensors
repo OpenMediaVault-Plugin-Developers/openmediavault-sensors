@@ -315,6 +315,8 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720* ]; then
         main_cpu="sensors-it8720*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/temperature-temp1.rrd ]; then
+        main_cpu="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
@@ -401,6 +403,8 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
         mb_temp="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
         mb_temp="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/temperature-temp2.rrd ]; then
+        mb_temp="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/temperature-temp1.rrd ]; then
         mb_temp="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
@@ -437,6 +441,8 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-k10temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/fanspeed-fan1.rrd ]; then
+        cpu_fan="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
@@ -473,6 +479,8 @@ if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
         sys_fan="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-k10temp*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/fanspeed-fan2.rrd ]; then
+        sys_fan="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
@@ -548,14 +556,6 @@ fi
 
 if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
-        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin sensors
-
-EOF
-            #/etc/init.d/collectd restart > /dev/null 2>&1
-        fi
-
         cat <<EOF > $CPUoutfile
 #!/bin/sh
 #
@@ -585,6 +585,11 @@ set -e
 
 ${collected}
 ${graph}
+
+${starteof1}
+LoadPlugin sensors
+
+${endeof}
 
 ${starteof2}
 # <<< [openmediavault] sensors-script
@@ -652,15 +657,6 @@ fi
 
 if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
-        if ! grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin mb
-
-EOF
-
-            #/etc/init.d/collectd restart > /dev/null 2>&1
-        fi
-
         cat <<EOF > $MBoutfile
 #!/bin/sh
 #
@@ -690,6 +686,11 @@ set -e
 
 ${collected}
 ${graph}
+
+${starteof1}
+LoadPlugin mb
+
+${endeof}
 
 ${starteof2}
 # <<< [openmediavault] mb-script
@@ -726,15 +727,6 @@ fi
 
 if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ] && [ ! -z $cpu_fan ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
-        if ! grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin fan
-
-EOF
-
-            #/etc/init.d/collectd restart > /dev/null 2>&1
-        fi
-
         cat <<EOF > $FANoutfile
 #!/bin/sh
 #
@@ -764,6 +756,11 @@ set -e
 
 ${collected}
 ${graph}
+
+${starteof1}
+LoadPlugin fan
+
+${endeof}
 
 ${starteof2}
 # <<< [openmediavault] fan-script
@@ -801,15 +798,6 @@ fi
 
 if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
-        if ! grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin sys
-
-EOF
-
-            #/etc/init.d/collectd restart > /dev/null 2>&1
-        fi
-
         cat <<EOF > $SYSoutfile
 #!/bin/sh
 #
@@ -839,6 +827,11 @@ set -e
 
 ${collected}
 ${graph}
+
+${starteof1}
+LoadPlugin sys
+
+${endeof}
 
 ${starteof2}
 # <<< [openmediavault] sys-script
@@ -963,3 +956,74 @@ rm -f /var/cache/openmediavault/cache.*.json > /dev/null 2>&1
 
 exit 0
 
+##############################################################
+Rpi cpu temp method to check.
+##############################################################
+#!/bin/bash
+#
+
+base_dir='/opt/zping'
+graph_dir='/var/www/zping'
+log="$base_dir/log/zping.log"
+
+function write_log()
+{
+    echo "`date '+%m/%d %H:%M:%S'` $1" >> $log
+}
+
+# if called with arguments this is a worker process, ping a target
+#output=`ping -c 20 -i .2 -W 1 -q $1`
+output=`/opt/vc/bin/vcgencmd measure_temp`
+retval=$?
+
+if [ $retval -eq 0 ] # at least some pings were returned
+    then
+        recvd=`echo $output | grep -o '[0-9]\+ received'`
+        recvd=${recvd% received}
+        lost=`expr 20 - $recvd`
+        stats=(`echo $output | grep -o '[0-9.]\+/[0-9.]\+/[0-9.]\+' | tr '/' ' '`)
+        min=${stats[0]}
+        avg=${stats[1]}
+        max=${stats[2]}
+elif [ $retval -eq 1 ] # no pings were returned
+    then
+        lost=20
+        min='U'
+        avg='U'
+        max='U'
+elif [ $retval -eq 2 ] # host not found
+    then
+        write_log "unknown host $1"
+        exit $retval
+else # other errors
+        write_log "error pinging $1 retval $retval"
+        exit $retval
+fi
+
+if [ ! -f $base_dir/rrd/$1.rrd ] # create rrd if it doesn't exist
+    then
+        rrdtool create $base_dir/rrd/$1.rrd \
+        --step 60 \
+        DS:lost:GAUGE:120:0:20 \
+        DS:min:GAUGE:120:0:1000 \
+        DS:avg:GAUGE:120:0:1000 \
+        DS:max:GAUGE:120:0:1000 \
+        RRA:MAX:0.5:1:525600
+
+        retval=$?
+
+    if [ $retval -gt 0 ]
+        then
+            write_log "unable to create rrd for $1 retval $retval"
+            exit 200
+    fi
+fi
+rrdtool update $base_dir/rrd/$1.rrd $2:$lost:$min:$avg:$max
+
+retval=$?
+
+if [ $retval -gt 0 ]
+    then
+        write_log "rrd update for $1 failed retval $retval"
+        exit 201
+fi

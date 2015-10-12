@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.20) TESTING; urgency=low
+
+  * Fix reboot breaking sensors
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 12 Oct 2015 10:42:51 -0000
+
 openmediavault-sensors (1.0.19) TESTING; urgency=low
 
   * Fix it8771 detection
