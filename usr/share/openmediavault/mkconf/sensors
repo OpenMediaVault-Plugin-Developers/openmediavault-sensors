@@ -554,7 +554,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_g
     /usr/sbin/omv-sensors-detect --auto > /dev/null 2>&1
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu || ! -z $core && "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
+if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ] || [ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         cat <<EOF > $CPUoutfile
 #!/bin/sh
