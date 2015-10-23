@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.21) TESTING; urgency=low
+
+  * Add nct6792 chip
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 24 Oct 2015 00:47:51 -0000
+
 openmediavault-sensors (1.0.20) TESTING; urgency=low
 
   * Fix reboot breaking sensors
