@@ -38,7 +38,9 @@ LINEsysFAN="$(omv_config_get "//services/sensors/linesysfan")"
 do_cpu1() {
 if [ ! -z $main_cpu ]; then
     case "$main_cpu" in
-        "sensors-nct67"*) rrd=2 ;;
+        "sensors-nct6792*"*) rrd=2 ;;
+        "sensors-nct6776"*) rrd=2 ;;
+        "sensors-nct6779"*) rrd=2 ;;
         "sensors-w83627thf"*) rrd=2 ;;
         *) rrd=1 ;;
     esac
@@ -190,7 +192,9 @@ fi
 do_mb1() {
 if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
-        "sensors-nct67"*) rrd=1 ;;
+        "sensors-nct6792*"*) rrd=1 ;;
+        "sensors-nct6776"*) rrd=1 ;;
+        "sensors-nct6779"*) rrd=1 ;;
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
@@ -213,7 +217,10 @@ fi
 do_mb1f() {
 if [ ! -z $mb_temp ]; then
     case "$mb_temp" in
-        "sensors-nct67"*) rrd=1 ;;
+        "sensors-nct6792*"*) rrd=1 ;;
+        "sensors-nct6776"*) rrd=1 ;;
+        "sensors-nct6779"*) rrd=1 ;;
+        "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
@@ -238,7 +245,10 @@ fi
 do_fan1() {
 if [ ! -z $cpu_fan ]; then
     case "$cpu_fan" in
-        "sensors-nct67"*) rrd=2 ;;
+        "sensors-nct6792*"*) rrd=2 ;;
+        "sensors-nct6776"*) rrd=2 ;;
+        "sensors-nct6779"*) rrd=2 ;;
+        "sensors-w83627thf"*) rrd=2 ;;
         "sensors-fschds-"*) rrd=2 ;;
         *) rrd=1 ;;
     esac
@@ -259,7 +269,9 @@ fi
 do_sys1() {
 if [ ! -z $sys_fan ]; then
     case "$sys_fan" in
-        "sensors-nct67"*) rrd=1 ;;
+        "sensors-nct6792*"*) rrd=1 ;;
+        "sensors-nct6776"*) rrd=1 ;;
+        "sensors-nct6779"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
