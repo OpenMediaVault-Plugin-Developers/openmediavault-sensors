@@ -1,3 +1,9 @@
+openmediavault-sensors (1.0.22) TESTING; urgency=low
+
+  * Add DashBoard
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 13 Nov 2015 11:30:00 -0000
+
 openmediavault-sensors (1.0.21) TESTING; urgency=low
 
   * Add nct6792 chip
