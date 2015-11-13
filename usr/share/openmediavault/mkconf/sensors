@@ -272,6 +272,7 @@ if [ ! -z $sys_fan ]; then
         "sensors-nct6792*"*) rrd=1 ;;
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-nct6779"*) rrd=1 ;;
+        "sensors-w83627thf"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
