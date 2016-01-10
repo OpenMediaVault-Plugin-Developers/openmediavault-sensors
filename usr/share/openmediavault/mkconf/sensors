@@ -42,6 +42,7 @@ if [ ! -z $main_cpu ]; then
         "sensors-nct6776"*) rrd=2 ;;
         "sensors-nct6779"*) rrd=2 ;;
         "sensors-w83627thf"*) rrd=2 ;;
+        "sensors-it8728"*) rrd=3 ;;
         *) rrd=1 ;;
     esac
     cat <<EOF >> $CPUoutfile
@@ -197,6 +198,7 @@ if [ ! -z $mb_temp ]; then
         "sensors-nct6779"*) rrd=1 ;;
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
+        "sensors-it8728"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -222,6 +224,7 @@ if [ ! -z $mb_temp ]; then
         "sensors-nct6779"*) rrd=1 ;;
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
+        "sensors-it8728"*) rrd=1 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -273,6 +276,7 @@ if [ ! -z $sys_fan ]; then
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-nct6779"*) rrd=1 ;;
         "sensors-w83627thf"*) rrd=1 ;;
+        "sensors-it8728"*) rrd=3 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -325,6 +329,8 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
         main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp1.rrd ]; then
         main_cpu="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-it8728*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720* ]; then
@@ -413,6 +419,8 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
         mb_temp="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp2.rrd ]; then
         mb_temp="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-it8728*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp2.rrd ]; then
         mb_temp="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/temperature-temp2.rrd ]; then
@@ -455,6 +463,8 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-it8728*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
@@ -497,6 +507,8 @@ if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
         sys_fan="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/fanspeed-fan1.rrd ]; then
+        sys_fan="sensors-it8728*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then
