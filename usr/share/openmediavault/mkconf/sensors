@@ -21,19 +21,19 @@ graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/o
 collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
 
 # Custom settings
-TABmain="$(omv_config_get "//services/sensors/tabmain")"
-TABcpuTEMP="$(omv_config_get "//services/sensors/tabcputemp")"
-TABmbTEMP="$(omv_config_get "//services/sensors/tabmbtemp")"
-TABcpuFAN="$(omv_config_get "//services/sensors/tabcpufan")"
-TABsysFAN="$(omv_config_get "//services/sensors/tabsysfan")"
-GRAPHcpuTITLE="$(omv_config_get "//services/sensors/graphcputitle")"
-GRAPHmbTITLE="$(omv_config_get "//services/sensors/graphmbtitle")"
-GRAPHcfanTITLE="$(omv_config_get "//services/sensors/graphcfantitle")"
-GRAPHsfanTITLE="$(omv_config_get "//services/sensors/graphsfantitle")"
-LINEcpuTEMP="$(omv_config_get "//services/sensors/linecputemp")"
-LINEcpuFAN="$(omv_config_get "//services/sensors/linecpufan")"
-LINEmbTEMP="$(omv_config_get "//services/sensors/linembtemp")"
-LINEsysFAN="$(omv_config_get "//services/sensors/linesysfan")"
+TABmain="$(omv_config_get "/config/services/sensors/tabmain")"
+TABcpuTEMP="$(omv_config_get "/config/services/sensors/tabcputemp")"
+TABmbTEMP="$(omv_config_get "/config/services/sensors/tabmbtemp")"
+TABcpuFAN="$(omv_config_get "/config/services/sensors/tabcpufan")"
+TABsysFAN="$(omv_config_get "/config/services/sensors/tabsysfan")"
+GRAPHcpuTITLE="$(omv_config_get "/config/services/sensors/graphcputitle")"
+GRAPHmbTITLE="$(omv_config_get "/config/services/sensors/graphmbtitle")"
+GRAPHcfanTITLE="$(omv_config_get "/config/services/sensors/graphcfantitle")"
+GRAPHsfanTITLE="$(omv_config_get "/config/services/sensors/graphsfantitle")"
+LINEcpuTEMP="$(omv_config_get "/config/services/sensors/linecputemp")"
+LINEcpuFAN="$(omv_config_get "/config/services/sensors/linecpufan")"
+LINEmbTEMP="$(omv_config_get "/config/services/sensors/linembtemp")"
+LINEsysFAN="$(omv_config_get "/config/services/sensors/linesysfan")"
 
 do_cpu1() {
 if [ ! -z $main_cpu ]; then
@@ -280,8 +280,8 @@ if [ ! -z $sys_fan ]; then
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
-    if [ ! -z "$(omv_config_get "//services/sensors/sysoffset")" ]; then
-        rrd=$(echo "$(($rrd+$(omv_config_get "//services/sensors/sysoffset")))")
+    if [ ! -z "$(omv_config_get "/config/services/sensors/sysoffset")" ]; then
+        rrd=$(echo "$(($rrd+$(omv_config_get "/config/services/sensors/sysoffset")))")
     fi
     cat <<EOF >> $SYSoutfile
   DEF:sfan1avg=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
@@ -298,17 +298,17 @@ fi
 }
 
 #Check status of the enable checkboxs
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "0" -o "$(omv_config_get "//services/sensors/mbtemp")" = "0" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "0" -o "$(omv_config_get "/config/services/sensors/mbtemp")" = "0" ] && [ "$(omv_config_get "/config/services/sensors/jntemp")" = "1" ]; then
     #Change value to zero
-    xmlstarlet ed -L -u "//services/sensors/jntemp" -v 0 -n ${OMV_CONFIG_FILE}
+    xmlstarlet ed -L -u "/config/services/sensors/jntemp" -v 0 -n ${OMV_CONFIG_FILE}
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "0" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "0" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "0" -o "$(omv_config_get "/config/services/sensors/sysfanenable")" = "0" ] && [ "$(omv_config_get "/config/services/sensors/jnfans")" = "1" ]; then
     #Change value to zero
-    xmlstarlet ed -L -u "//services/sensors/jnfans" -v 0 -n ${OMV_CONFIG_FILE}
+    xmlstarlet ed -L -u "/config/services/sensors/jnfans" -v 0 -n ${OMV_CONFIG_FILE}
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
     # Get main CPU
     # Like cores but ATM i don't know values
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
@@ -401,7 +401,7 @@ if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
     fi
 fi
 
-if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ]; then
     # Get MB temp
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp2.rrd ]; then
         mb_temp="sensors-atk0110*"
@@ -445,7 +445,7 @@ if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
     fi
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
     # Get CPU FAN
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-atk0110*"
@@ -489,7 +489,7 @@ if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
     fi
 fi
 
-if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" ]; then
     # Get SYS FAN
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-atk0110*"
@@ -587,12 +587,12 @@ fi
 sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
 
 #Run /usr/sbin/omv-sensors-detect > /dev/null 2>&1 here ONLY once
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "1" -o "$(omv_config_get "//services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "//services/sensors/mbtemp")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" -o "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" -o "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ]; then
     #Another if here? does not need to run again.
-    /usr/sbin/omv-sensors-detect --auto > /dev/null 2>&1
+    /usr/sbin/omv-sensors-detect --auto
 fi
 
-if ([ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ]) || ([ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]); then
+if ([ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ] && [ ! -z $main_cpu ]) || ([ ! -z $core ] && [ "$(omv_config_get "/config/services/sensors/shcore")" = "1" ]); then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         cat <<EOF > $CPUoutfile
 #!/bin/sh
@@ -651,27 +651,27 @@ rrdtool graph \\\${IMGDIR}/sensors-\${lcperiod}.png --start \\\${\${ucperiod}STA
 EOF
 
         do_cpu1;
-		if [ "$(omv_config_get "//services/sensors/jntemp")" = "1" ]; then
+		if [ "$(omv_config_get "/config/services/sensors/jntemp")" = "1" ]; then
             MBoutfile=$CPUoutfile
-            if [ "$(omv_config_get "//services/sensors/fheit")" = "1" ]; then
+            if [ "$(omv_config_get "/config/services/sensors/fheit")" = "1" ]; then
                 do_mb1f;
             else
                 do_mb1;
             fi
         fi
 
-        if [ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
+        if [ ! -z $core ] && [ "$(omv_config_get "/config/services/sensors/shcore")" = "1" ]; then
             do_cpu2;
         fi
 
-        if [ "$(omv_config_get "//services/sensors/fheit")" = "1" ]; then
+        if [ "$(omv_config_get "/config/services/sensors/fheit")" = "1" ]; then
             do_cpu3f;
         else
             do_cpu3;
         fi
 
-        if [ ! -z $core ] && [ "$(omv_config_get "//services/sensors/shcore")" = "1" ]; then
-            if [ "$(omv_config_get "//services/sensors/fheit")" = "1" ]; then
+        if [ ! -z $core ] && [ "$(omv_config_get "/config/services/sensors/shcore")" = "1" ]; then
+            if [ "$(omv_config_get "/config/services/sensors/fheit")" = "1" ]; then
                 do_cpu4f;
             else
                 do_cpu4;
@@ -693,7 +693,7 @@ EOF
     $CPUoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
+if [ "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "/config/services/sensors/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
         cat <<EOF > $MBoutfile
 #!/bin/sh
@@ -742,7 +742,7 @@ for ucperiod in HOUR DAY WEEK MONTH YEAR; do
 rrdtool graph \\\${IMGDIR}/mb-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
 EOF
 
-        if [ "$(omv_config_get "//services/sensors/fheit")" = "1" ]; then
+        if [ "$(omv_config_get "/config/services/sensors/fheit")" = "1" ]; then
             do_mb1f;
         else
             do_mb1;
@@ -763,7 +763,7 @@ EOF
     $MBoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ] && [ ! -z $cpu_fan ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ] && [ ! -z $cpu_fan ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
         cat <<EOF > $FANoutfile
 #!/bin/sh
@@ -814,7 +814,7 @@ rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} 
 EOF
 
         do_fan1;
-        if [ "$(omv_config_get "//services/sensors/jnfans")" = "1" ]; then
+        if [ "$(omv_config_get "/config/services/sensors/jnfans")" = "1" ]; then
             SYSoutfile=$FANoutfile
             do_sys1;
         fi
@@ -834,7 +834,7 @@ EOF
     $FANoutfile
 fi
 
-if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
+if [ "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "/config/services/sensors/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
         cat <<EOF > $SYSoutfile
 #!/bin/sh
@@ -901,7 +901,7 @@ EOF
 fi
 
 #Create .js file.
-if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" -o "$(omv_config_get "//services/sensors/mbtemp")" = "1" -o "$(omv_config_get "//services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ]; then
+if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" -o "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" -o "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" -o "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" ]; then
     cat <<EOF > /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
 /**
  * This file is part of OpenMediaVault.
@@ -942,7 +942,7 @@ Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
                 // Add Sub Tabs.
 EOF
 
-    if [ "$(omv_config_get "//services/sensors/cpuenable")" = "1" ]; then
+    if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
                 me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
                                                 title: "${TABcpuTEMP}",
@@ -951,7 +951,7 @@ EOF
 EOF
     fi
 
-    if [ "$(omv_config_get "//services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "//services/sensors/jntemp")" = "0" ]; then
+    if [ "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ] && [ "$(omv_config_get "/config/services/sensors/jntemp")" = "0" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
                 me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
                                                 title: "${TABmbTEMP}",
@@ -960,7 +960,7 @@ EOF
 EOF
     fi
 
-    if [ "$(omv_config_get "//services/sensors/cpufanenable")" = "1" ]; then
+    if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
                 me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
                                                 title: "${TABcpuFAN}",
@@ -969,7 +969,7 @@ EOF
 EOF
     fi
 
-    if [ "$(omv_config_get "//services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "//services/sensors/jnfans")" = "0" ]; then
+    if [ "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" ] && [ "$(omv_config_get "/config/services/sensors/jnfans")" = "0" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
                 me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
                                                 title: "${TABsysFAN}",
@@ -988,7 +988,7 @@ EOF
 fi
 
 #add these last
-/etc/init.d/collectd restart > /dev/null 2>&1
+service collectd restart > /dev/null 2>&1
 /usr/sbin/omv-mkgraph > /dev/null 2>&1
 rm -f /var/cache/openmediavault/cache.*.json > /dev/null 2>&1
 

@@ -36,12 +36,14 @@ case "$1" in
         fi
 
         if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            /usr/sbin/omv-sensors-detect --auto > /dev/null 2>&1
+            /usr/sbin/omv-sensors-detect --auto
             cat <<EOF >> /etc/collectd/collectd.conf
 LoadPlugin sensors
 
 EOF
-            /etc/init.d/collectd restart > /dev/null 2>&1
+
+            /etc/collectd/collectd.conf
+            service collectd restart > /dev/null 2>&1
         fi
 
         # Activate package triggers. These triggers are only set during the
