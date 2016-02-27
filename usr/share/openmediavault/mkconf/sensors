@@ -199,6 +199,7 @@ if [ ! -z $mb_temp ]; then
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
         "sensors-it8728"*) rrd=1 ;;
+        "sensors-thinkpad-isa"*) rrd=11 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -225,6 +226,7 @@ if [ ! -z $mb_temp ]; then
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8771"*) rrd=1 ;;
         "sensors-it8728"*) rrd=1 ;;
+        "sensors-thinkpad-isa"*) rrd=11 ;;
         "sensors-fschds-"*) rrd=3 ;;
         *) rrd=2 ;;
     esac
@@ -325,6 +327,10 @@ if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
         main_cpu="sensors-fschds-*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-axp20_mfd*/temperature-temp1.rrd ]; then
         main_cpu="sensors-axp20_mfd*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-thinkpad-isa*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-thinkpad-isa*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-sun4i_ts-isa*/temperature-temp1.rrd ]; then
+        main_cpu="sensors-sun4i_ts-isa*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/temperature-temp1.rrd ]; then
         main_cpu="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp1.rrd ]; then
@@ -419,6 +425,8 @@ if [ "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ]; then
         mb_temp="sensors-axp20_mfd*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8718*/temperature-temp2.rrd ]; then
         mb_temp="sensors-it8718*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-thinkpad-isa*/temperature-temp11.rrd ]; then
+        mb_temp="sensors-thinkpad-isa*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/temperature-temp2.rrd ]; then
         mb_temp="sensors-it8728*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/temperature-temp2.rrd ]; then
@@ -465,6 +473,8 @@ if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="sensors-it8718*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8728*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-it8728*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-thinkpad-isa*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-thinkpad-isa*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83627hf*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83627hf*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720*/fanspeed-fan1.rrd ]; then

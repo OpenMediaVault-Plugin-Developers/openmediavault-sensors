@@ -1,12 +1,16 @@
+openmediavault-sensors (1.0.24) TESTING; urgency=low
+
+  * Add sun4i_ts-isa
+  * Add thinkpad-isa
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 27 Feb 2016 23:23:00 -0000
+
 openmediavault-sensors (1.0.23) TESTING; urgency=low
 
   * Add it8728
-
-openmediavault-sensors (1.0.22) TESTING; urgency=low
-
   * Add DashBoard
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 10 Jan 2015 12:41:00 -0000
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 10 Jan 2016 12:41:00 -0000
 
 openmediavault-sensors (1.0.21) TESTING; urgency=low
 
