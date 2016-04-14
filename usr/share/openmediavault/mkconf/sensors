@@ -422,6 +422,7 @@ if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
             main_cpu="sensors-emc6d103"
         else
             main_cpu=""
+        fi
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
@@ -571,6 +572,7 @@ if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
             cpu_fan="sensors-emc6d103"
         else
             cpu_fan=""
+        fi
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
         cpu_fan=""
     else
