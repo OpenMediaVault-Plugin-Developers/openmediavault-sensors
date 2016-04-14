@@ -417,12 +417,8 @@ if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
         main_cpu="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ]; then
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
-            main_cpu="sensors-emc6d103"
-        else
-            main_cpu=""
-        fi
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
+        main_cpu="sensors-emc6d103"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
@@ -567,12 +563,8 @@ if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83667hg*"
-    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ]; then
-        if [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
             cpu_fan="sensors-emc6d103"
-        else
-            cpu_fan=""
-        fi
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
         cpu_fan=""
     else
