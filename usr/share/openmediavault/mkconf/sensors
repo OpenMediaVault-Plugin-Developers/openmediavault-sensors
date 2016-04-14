@@ -37,20 +37,32 @@ LINEsysFAN="$(omv_config_get "/config/services/sensors/linesysfan")"
 
 do_cpu1() {
 if [ ! -z $main_cpu ]; then
-    case "$main_cpu" in
-        "sensors-nct6792*"*) rrd=2 ;;
-        "sensors-nct6776"*) rrd=2 ;;
-        "sensors-nct6779"*) rrd=2 ;;
-        "sensors-w83627thf"*) rrd=2 ;;
-        "sensors-it8728"*) rrd=3 ;;
-        *) rrd=1 ;;
-    esac
-    cat <<EOF >> $CPUoutfile
+    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+        cat <<EOF >> $CPUoutfile
+  DEF:cpu1pavg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:AVERAGE ${end}
+  DEF:cpu1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MIN ${end}
+  DEF:cpu1pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MAX ${end}
+  DEF:cpu2pavg=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:AVERAGE ${end}
+  DEF:cpu2pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MIN ${end}
+  DEF:cpu2pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MAX ${end}
+EOF
+
+    else
+        case "$main_cpu" in
+            "sensors-nct6792*"*) rrd=2 ;;
+            "sensors-nct6776"*) rrd=2 ;;
+            "sensors-nct6779"*) rrd=2 ;;
+            "sensors-w83627thf"*) rrd=2 ;;
+            "sensors-it8728"*) rrd=3 ;;
+            *) rrd=1 ;;
+        esac
+        cat <<EOF >> $CPUoutfile
   DEF:cpupavg=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
   DEF:cpupmin=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MIN ${end}
   DEF:cpupmax=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MAX ${end}
 EOF
 
+    fi
 fi
 }
 
@@ -87,30 +99,68 @@ fi
 
 do_cpu3() {
 if [ ! -z $main_cpu ]; then
-    cat <<EOF >> $CPUoutfile
-  LINE1:cpupavg\\\${COLOR_CPU_PHYSICAL}:"${LINEcpuTEMP}" ${end}
+    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+        cat <<EOF >> $CPUoutfile
+  LINE1:cpu1pavg\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1" ${end}
+  GPRINT:cpu1pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpu1pavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpu1pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpu1pavg:LAST:"%4.2lf Last\l" ${end}
+  LINE1:cpu2pavg\\\${COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2" ${end}
+  GPRINT:cpu2pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:cpu2pavg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:cpu2pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:cpu2pavg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+    else
+        cat <<EOF >> $CPUoutfile
+  LINE1:cpupavg\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}" ${end}
   GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
   GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
   GPRINT:cpupavg:LAST:"%4.2lf Last\l" ${end}
 EOF
 
+    fi
 fi
 }
 
 do_cpu3f() {
 if [ ! -z $main_cpu ]; then
-    cat <<EOF >> $CPUoutfile
+    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+        cat <<EOF >> $CPUoutfile
+  CDEF:farc1=9,5,/,cpu1pavg,*,32,+ ${end}
+  CDEF:farc2=9,5,/,cpu1pmin,*,32,+ ${end}
+  CDEF:farc3=9,5,/,cpu1pmax,*,32,+ ${end}
+  LINE1:farc1\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1" ${end}
+  GPRINT:farc2:MIN:"%4.2lf Min" ${end}
+  GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:farc3:MAX:"%4.2lf Max" ${end}
+  GPRINT:farc1:LAST:"%4.2lf Last\l" ${end}
+  CDEF:farc4=9,5,/,cpu1pavg,*,32,+ ${end}
+  CDEF:farc5=9,5,/,cpu1pmin,*,32,+ ${end}
+  CDEF:farc6=9,5,/,cpu1pmax,*,32,+ ${end}
+  LINE1:farc1\\\${COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2" ${end}
+  GPRINT:farc5:MIN:"%4.2lf Min" ${end}
+  GPRINT:farc4:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:farc6:MAX:"%4.2lf Max" ${end}
+  GPRINT:farc4:LAST:"%4.2lf Last\l" ${end}
+EOF
+
+    else
+        cat <<EOF >> $CPUoutfile
   CDEF:farc1=9,5,/,cpupavg,*,32,+ ${end}
   CDEF:farc2=9,5,/,cpupmin,*,32,+ ${end}
   CDEF:farc3=9,5,/,cpupmax,*,32,+ ${end}
-  LINE1:farc1\\\${COLOR_CPU_PHYSICAL}:"${LINEcpuTEMP}" ${end}
+  LINE1:farc1\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}" ${end}
   GPRINT:farc2:MIN:"%4.2lf Min" ${end}
   GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:farc3:MAX:"%4.2lf Max" ${end}
   GPRINT:farc1:LAST:"%4.2lf Last\l" ${end}
 EOF
 
+    fi
 fi
 }
 
@@ -249,6 +299,26 @@ fi
 
 do_fan1() {
 if [ ! -z $cpu_fan ]; then
+    if [ "$cpu_fan" = "sensors-emc6d103" ]; then
+        cat <<EOF >> $FANoutfile
+  DEF:fan1avg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:AVERAGE ${end}
+  DEF:fan1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MIN ${end}
+  DEF:fan1pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MAX ${end}
+  LINE1:fan1avg\\\${COLOR_CPU1_FAN}:"${LINEcpuFAN}1" ${end}
+  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:fan1avg:LAST:"%4.2lf Last\l" ${end}
+  DEF:fan2avg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:AVERAGE ${end}
+  DEF:fan2pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MIN ${end}
+  DEF:fan2pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MAX ${end}
+  LINE1:fan2avg\\\${COLOR_CPU2_FAN}:"${LINEcpuFAN}2" ${end}
+  GPRINT:fan2pmin:MIN:"%4.2lf Min" ${end}
+  GPRINT:fan2avg:AVERAGE:"%4.2lf Avg" ${end}
+  GPRINT:fan2pmax:MAX:"%4.2lf Max" ${end}
+  GPRINT:fan2avg:LAST:"%4.2lf Last\l" ${end}
+EOF
+
     case "$cpu_fan" in
         "sensors-nct6792*"*) rrd=2 ;;
         "sensors-nct6776"*) rrd=2 ;;
@@ -257,23 +327,25 @@ if [ ! -z $cpu_fan ]; then
         "sensors-fschds-"*) rrd=2 ;;
         *) rrd=1 ;;
     esac
-    cat <<EOF >> $FANoutfile
+        cat <<EOF >> $FANoutfile
   DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
   DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
   DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
-  LINE1:fan1avg\\\${COLOR_CPU_FAN}:"${LINEcpuFAN}" ${end}
+  LINE1:fan1avg\\\${COLOR_CPU1_FAN}:"${LINEcpuFAN}" ${end}
   GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
   GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
   GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
   GPRINT:fan1avg:LAST:"%4.2lf Last\l" ${end}
 EOF
 
+    fi
 fi
 }
 
 do_sys1() {
 if [ ! -z $sys_fan ]; then
     case "$sys_fan" in
+        "sensors-emc6d103-i2c-1-2d"*) rrd=1 ;;
         "sensors-nct6792*"*) rrd=1 ;;
         "sensors-nct6776"*) rrd=1 ;;
         "sensors-nct6779"*) rrd=1 ;;
@@ -345,6 +417,11 @@ if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
         main_cpu="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ]; then
+        if [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
+            main_cpu="sensors-emc6d103"
+        else
+            main_cpu=""
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
@@ -441,6 +518,8 @@ if [ "$(omv_config_get "/config/services/sensors/mbtemp")" = "1" ]; then
         mb_temp="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/temperature-temp1.rrd ]; then
         mb_temp="sensors-it8771*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp2.rrd ]; then
+        mb_temp="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
         mb_temp=""
     else
@@ -487,6 +566,11 @@ if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
         cpu_fan="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ]; then
+        if [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
+            cpu_fan="sensors-emc6d103"
+        else
+            cpu_fan=""
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
         cpu_fan=""
     else
@@ -531,6 +615,8 @@ if [ "$(omv_config_get "/config/services/sensors/sysfanenable")" = "1" ]; then
         sys_fan="w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-w83667hg*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/fanspeed-fan1.rrd ]; then
+        sys_fan="sensors-emc6d103-i2c-1-2d"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
         sys_fan=""
     else
@@ -643,16 +729,17 @@ ${starteof2}
 # <<< [openmediavault] sensors-script
 # Plugin: sensors
 TITLE_LOAD="${GRAPHcpuTITLE}"
-COLOR_CPU_PHYSICAL="#00cc00" # green
-COLOR_CPU_CORE_0="#0000fd"   # blue
-COLOR_CPU_CORE_1="#ff0000"   # red
-COLOR_CPU_CORE_2="#cc00cc"   # purple
-COLOR_CPU_CORE_3="#0000cc"   # dark blue
-COLOR_CPU_CORE_4="#cc6600"   # brown
-COLOR_CPU_CORE_5="#ff8308"   # orange
-COLOR_CPU_CORE_6="#ffce3b"   # yellow
-COLOR_CPU_CORE_7="#004f00"   # dark green
-COLOR_MBT="#000000"          # black
+COLOR_CPU1_PHYSICAL="#00cc00" # green
+COLOR_CPU2_PHYSICAL="#004f00" # dark green
+COLOR_CPU_CORE_0="#0000fd"    # blue
+COLOR_CPU_CORE_1="#ff0000"    # red
+COLOR_CPU_CORE_2="#cc00cc"    # purple
+COLOR_CPU_CORE_3="#0000cc"    # dark blue
+COLOR_CPU_CORE_4="#cc6600"    # brown
+COLOR_CPU_CORE_5="#ff8308"    # orange
+COLOR_CPU_CORE_6="#ffce3b"    # yellow
+COLOR_CPU_CORE_7="#004f00"    # dark green
+COLOR_MBT="#000000"           # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
@@ -814,7 +901,8 @@ ${starteof2}
 # <<< [openmediavault] fan-script
 # Plugin: fan
 TITLE_LOAD="${GRAPHcfanTITLE}"
-COLOR_CPU_FAN="#000000" # black
+COLOR_CPU1_FAN="#000000" # black
+COLOR_CPU2_FAN="#ff0000" # red
 COLOR_SYS_FAN="#00CC00" # black
 $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
