@@ -37,7 +37,7 @@ LINEsysFAN="$(omv_config_get "/config/services/sensors/linesysfan")"
 
 do_cpu1() {
 if [ ! -z $main_cpu ]; then
-    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+    if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
   DEF:cpu1pavg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:AVERAGE ${end}
   DEF:cpu1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MIN ${end}
@@ -99,7 +99,7 @@ fi
 
 do_cpu3() {
 if [ ! -z $main_cpu ]; then
-    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+    if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
   LINE1:cpu1pavg\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1" ${end}
   GPRINT:cpu1pmin:MIN:"%4.2lf Min" ${end}
@@ -128,7 +128,7 @@ fi
 
 do_cpu3f() {
 if [ ! -z $main_cpu ]; then
-    if [ "$main_cpu" = "sensors-emc6d103" ]; then
+    if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
   CDEF:farc1=9,5,/,cpu1pavg,*,32,+ ${end}
   CDEF:farc2=9,5,/,cpu1pmin,*,32,+ ${end}
@@ -299,7 +299,7 @@ fi
 
 do_fan1() {
 if [ ! -z $cpu_fan ]; then
-    if [ "$cpu_fan" = "sensors-emc6d103" ]; then
+    if [ "$cpu_fan" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $FANoutfile
   DEF:fan1avg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:AVERAGE ${end}
   DEF:fan1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MIN ${end}
@@ -418,7 +418,7 @@ if [ "$(omv_config_get "/config/services/sensors/cpuenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
-        main_cpu="sensors-emc6d103"
+        main_cpu="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
         main_cpu=""
     else
@@ -564,7 +564,7 @@ if [ "$(omv_config_get "/config/services/sensors/cpufanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
-            cpu_fan="sensors-emc6d103"
+            cpu_fan="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
         cpu_fan=""
     else
