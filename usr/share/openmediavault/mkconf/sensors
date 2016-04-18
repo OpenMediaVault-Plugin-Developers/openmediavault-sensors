@@ -319,6 +319,8 @@ if [ ! -z $cpu_fan ]; then
   GPRINT:fan2avg:LAST:"%4.2lf Last\l" ${end}
 EOF
 
+    else
+
     case "$cpu_fan" in
         "sensors-nct6792*"*) rrd=2 ;;
         "sensors-nct6776"*) rrd=2 ;;
