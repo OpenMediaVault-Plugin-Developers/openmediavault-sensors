@@ -1,0 +1,100 @@
+{
+	"type": "config",
+	"id": "conf.service.sensors",
+	"title": "Sensors",
+	"queryinfo": {
+		"xpath": "/config/services/sensors",
+		"iterable": false
+	},
+	"properties": {
+		"cpuenable": {
+			"type": "boolean",
+			"default": 0
+		},
+		"sysfanenable": {
+			"type": "boolean",
+			"default": 0
+		},
+		"cpufanenable": {
+			"type": "boolean",
+			"default": 0
+		},
+		"mbtemp": {
+			"type": "boolean",
+			"default": 0
+		},
+		"fheit": {
+			"type": "boolean",
+			"default": 0
+		},
+		"jntemp": {
+			"type": "boolean",
+			"default": 0
+		},
+		"jnfans": {
+			"type": "boolean",
+			"default": 0
+		},
+		"shcore": {
+			"type": "boolean",
+			"default": 0
+		},
+		"sysoffset": {
+			"type": "string",
+			"default": ""
+		},
+		"tabmain": {
+			"type": "string",
+			"default": "OMV Sensors"
+		},
+		"tabcputemp": {
+			"type": "string",
+			"default": "CPU Temp"
+		},
+		"tabmbtemp": {
+			"type": "string",
+			"default": "MotherBoard Temp"
+		},
+		"tabcpufan": {
+			"type": "string",
+			"default": "CPU fan speed"
+		},
+		"tabsysfan": {
+			"type": "string",
+			"default": "SYS fan speed"
+		},
+		"graphcputitle": {
+			"type": "string",
+			"default": "CPU temperature"
+		},
+		"graphmbtitle": {
+			"type": "string",
+			"default": "MB temperature"
+		},
+		"graphcfantitle": {
+			"type": "string",
+			"default": "CPU fan speed"
+		},
+		"graphsfantitle": {
+			"type": "string",
+			"default": "System fan speed"
+		},
+		"linecputemp": {
+			"type": "string",
+			"default": "CPU"
+		},
+		"linecpufan": {
+			"type": "string",
+			"default": "CPU Fan"
+		},
+		"linembtemp": {
+			"type": "string",
+			"default": "MB"
+
+		},
+		"linesysfan": {
+			"type": "string",
+			"default": "SYS Fan"
+		}
+	}
+}

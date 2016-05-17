@@ -42,7 +42,6 @@ LoadPlugin sensors
 
 EOF
 
-            /etc/collectd/collectd.conf
             service collectd restart > /dev/null 2>&1
         fi
 
@@ -60,5 +59,7 @@ EOF
         exit 1
     ;;
 esac
+
+#DEBHELPER#
 
 exit 0

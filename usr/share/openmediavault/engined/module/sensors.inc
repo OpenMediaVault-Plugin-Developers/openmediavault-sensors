@@ -17,29 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once("openmediavault/module.inc");
-require_once("openmediavault/config.inc");
-require_once("openmediavault/error.inc");
-require_once("openmediavault/util.inc");
-
-class OMVModuleSensors extends OMVModuleServiceAbstract implements
-    OMVINotifyListener
+class OMVModuleSensors extends \OMV\Engine\Module\ServiceAbstract
+    implements \OMV\Engine\Notify\IListener
 {
-
-    private function getPluginName()
-    {
-        return strtolower($this->getName());
-    }
-
-    private function getEventMessagePath()
-    {
-        return sprintf("org.openmediavault.service.%s", $this->getPluginName());
-    }
-
-    private function getXPath()
-    {
-        return sprintf("//services/%s", $this->getPluginName());
-    }
 
     public function getName()
     {
@@ -48,28 +28,17 @@ class OMVModuleSensors extends OMVModuleServiceAbstract implements
 	
     public function applyConfig()
     {
-        global $xmlConfig;
-
-        $cmd = sprintf("omv-mkconf %s balls 2>&1", $this->getPluginName());
-        if (0 !== $this->exec($cmd, $output)) {
-            throw new OMVException(
-                OMVErrorMsg::E_EXEC_FAILED,
-                $cmd,
-                implode("\n", $output)
-            );
-        }
+        $cmd = new \OMV\System\Process("omv-mkconf", "sensors");
+        $cmd->setRedirect2to1(TRUE);
+        $cmd->execute();
     }
 
-    function bindListeners(OMVNotifyDispatcher $dispatcher)
+    function bindListeners(\OMV\Engine\Notify\Dispatcher $dispatcher)
     {
         $dispatcher->addListener(
             OMV_NOTIFY_MODIFY,
-            $this->getEventMessagePath(),
-            array($this, "setDirty")
+            "org.openmediavault.conf.service.sensors",
+            [ $this, "setDirty" ]
         );
     }
 }
-
-// Register module
-$moduleMgr = &OMVModuleMgr::getInstance();
-$moduleMgr->registerModule(new OMVModuleSensors());

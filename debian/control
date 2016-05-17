@@ -4,11 +4,13 @@ XB-Plugin-Section: utilities
 Priority: optional
 Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
 Build-Depends: debhelper (>= 9 )
-Standards-Version: 3.9.3
+Standards-Version: 3.9.6
 
 Package: openmediavault-sensors
 Architecture: all
-Depends: ${misc:Depends}, openmediavault (>= 0.6.0.14), lm-sensors
+Depends: ${misc:Depends},
+         openmediavault (>= 3.0.15),
+         lm-sensors
 Description: Provides a cpu temperature monitor
  OpenMediaVault Sensors is in the early stages of development,
  in the future we hope to also monitor other temperatures and
