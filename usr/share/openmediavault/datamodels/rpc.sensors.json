@@ -1,0 +1,88 @@
+[{
+	"type": "rpc",
+	"id": "rpc.sensors.setsettings",
+	"params": {
+		"type": "object",
+		"properties": {
+			"cpuenable": {
+				"type": "boolean",
+				"required": true
+			},
+			"sysfanenable": {
+				"type": "boolean"
+			},
+			"cpufanenable": {
+				"type": "boolean",
+				"required": true
+			},
+			"mbtemp": {
+				"type": "boolean",
+				"required": true
+			},
+			"fheit": {
+				"type": "boolean",
+				"required": true
+			},
+			"jntemp": {
+				"type": "boolean"
+			},
+			"jnfans": {
+				"type": "boolean"
+			},
+			"shcore": {
+				"type": "boolean"
+			},
+			"sysoffset": {
+				"type": "string"
+			},
+			"tabmain": {
+				"type": "string",
+				"required": true
+			},
+			"tabcputemp": {
+				"type": "string",
+				"required": true
+			},
+			"tabmbtemp": {
+				"type": "string",
+				"required": true
+			},
+			"tabcpufan": {
+				"type": "string",
+				"required": true
+			},
+			"tabsysfan": {
+				"type": "string",
+				"required": true
+			},
+			"graphcputitle": {
+				"type": "string",
+				"required": true
+			},
+			"graphmbtitle": {
+				"type": "string",
+				"required": true
+			},
+			"graphcfantitle": {
+				"type": "string",
+				"required": true
+			},
+			"graphsfantitle": {
+				"type": "string",
+				"required": true
+			},
+			"linecputemp": {
+				"type": "string"
+			},
+			"linecpufan": {
+				"type": "string"
+			},
+			"linembtemp": {
+				"type": "string"
+			},
+			"linesysfan": {
+				"type": "string"
+			}
+		}
+	}
+}]
