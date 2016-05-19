@@ -56,7 +56,7 @@ class OMVRpcServiceSensors extends \OMV\Rpc\ServiceAbstract
         $dispatcher = \OMV\Engine\Notify\Dispatcher::getInstance();
         $dispatcher->notify(
             OMV_NOTIFY_MODIFY,
-            "org.openmediavault.conf.service.sensors",
+            "org.openmediavault.conf.services.sensors",
             $object->getAssoc()
         );
 
