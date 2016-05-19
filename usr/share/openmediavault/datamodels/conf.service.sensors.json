@@ -9,35 +9,35 @@
 	"properties": {
 		"cpuenable": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"sysfanenable": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"cpufanenable": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"mbtemp": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"fheit": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"jntemp": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"jnfans": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"shcore": {
 			"type": "boolean",
-			"default": 0
+			"default": true
 		},
 		"sysoffset": {
 			"type": "string",
