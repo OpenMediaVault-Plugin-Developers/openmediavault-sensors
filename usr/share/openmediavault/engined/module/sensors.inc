@@ -28,7 +28,7 @@ class OMVModuleSensors extends \OMV\Engine\Module\ServiceAbstract
 	
     public function applyConfig()
     {
-        $cmd = new \OMV\System\Process("omv-mkconf", "sensors");
+        $cmd = new \OMV\System\Process("omv-mkconf sensors", "balls");
         $cmd->setRedirect2to1(TRUE);
         $cmd->execute();
     }
