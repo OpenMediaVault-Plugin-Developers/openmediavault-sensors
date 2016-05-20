@@ -13,10 +13,10 @@ case "$1" in
         if ! omv_config_exists "${SERVICE_XPATH}"; then
             echo "Initial configuration."
             omv_config_add_element "/config/services" "${SERVICE_XPATH_NAME}"
-            omv_config_add_element "${SERVICE_XPATH}" "cpuenable" "0"
-            omv_config_add_element "${SERVICE_XPATH}" "sysfanenable" "0"
-            omv_config_add_element "${SERVICE_XPATH}" "cpufanenable" "0"
-            omv_config_add_element "${SERVICE_XPATH}" "mbtemp" "0"
+            omv_config_add_element "${SERVICE_XPATH}" "cpuenable" "false"
+            omv_config_add_element "${SERVICE_XPATH}" "sysfanenable" "false"
+            omv_config_add_element "${SERVICE_XPATH}" "cpufanenable" "false"
+            omv_config_add_element "${SERVICE_XPATH}" "mbtemp" "false"
         fi
 
         if ! omv_config_exists "${SERVICE_XPATH}/tabmain"; then
