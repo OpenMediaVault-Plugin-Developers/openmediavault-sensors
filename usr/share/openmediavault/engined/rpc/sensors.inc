@@ -21,42 +21,42 @@ class OMVRpcServiceSensors extends \OMV\Rpc\ServiceAbstract
 {
     public function getName()
     {
-        return "Sensors";
+        return 'Sensors';
     }
 
     public function initialize()
     {
-        $this->registerMethod("getSettings");
-        $this->registerMethod("setSettings");
+        $this->registerMethod('getSettings');
+        $this->registerMethod('setSettings');
     }
 
     public function getSettings($params, $context)
     {
         // Validate the RPC caller context.
-        $this->validateMethodContext($context, ["role" => OMV_ROLE_ADMINISTRATOR]);
+        $this->validateMethodContext($context, [ 'role' => OMV_ROLE_ADMINISTRATOR ]);
 
         $db = \OMV\Config\Database::getInstance();
-        $object = $db->get("conf.service.sensors");
+        $object = $db->get('conf.service.sensors');
         return $object->getAssoc();
     }
 
     public function setSettings($params, $context)
     {
         // Validate the RPC caller context.
-        $this->validateMethodContext($context, ["role" => OMV_ROLE_ADMINISTRATOR]); 
+        $this->validateMethodContext($context, [ 'role' => OMV_ROLE_ADMINISTRATOR ]);
 
         // Validate the parameters of the RPC service method.
-        $this->validateMethodParams($params, "rpc.sensors.setsettings");
+        $this->validateMethodParams($params, 'rpc.sensors.setsettings');
         // Get the existing configuration object.
         $db = \OMV\Config\Database::getInstance();
-        $object = $db->get("conf.service.sensors");
+        $object = $db->get('conf.service.sensors');
         $object->setAssoc($params);
         $db->set($object);
 
         $dispatcher = \OMV\Engine\Notify\Dispatcher::getInstance();
         $dispatcher->notify(
             OMV_NOTIFY_MODIFY,
-            "org.openmediavault.conf.services.sensors",
+            'org.openmediavault.conf.services.sensors',
             $object->getAssoc()
         );
 

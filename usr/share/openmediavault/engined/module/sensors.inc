@@ -23,7 +23,7 @@ class OMVModuleSensors extends \OMV\Engine\Module\ServiceAbstract
 
     public function getName()
     {
-        return "Sensors";
+        return 'sensors';
     }
 	
     public function applyConfig()
@@ -37,8 +37,8 @@ class OMVModuleSensors extends \OMV\Engine\Module\ServiceAbstract
     {
         $dispatcher->addListener(
             OMV_NOTIFY_MODIFY,
-            "org.openmediavault.conf.service.sensors",
-            [ $this, "setDirty" ]
+            'org.openmediavault.conf.services.sensors',
+            [ $this, 'setDirty' ]
         );
     }
 }
