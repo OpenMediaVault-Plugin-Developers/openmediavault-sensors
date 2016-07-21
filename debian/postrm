@@ -56,6 +56,14 @@ case "$1" in
                 rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js
             fi
 
+            if [ -f /var/www/openmediavault/js/omv/module/admin/dashboard/part/Sensors.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/dashboard/part/Sensors.js
+            fi
+
+            if [ -f /var/www/openmediavault/js/omv/module/admin/dashboard/view/Sensors.js ]; then
+                rm -f /var/www/openmediavault/js/omv/module/admin/dashboard/view/Sensors.js
+            fi
+
             if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
                 sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
             fi
