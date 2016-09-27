@@ -424,7 +424,7 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
         main_cpu="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp1.rrd ]; then
-        main_cpu=""
+        main_cpu="sensors-acpitz*"
     else
         main_cpu=""
     fi
@@ -522,7 +522,7 @@ if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp2.rrd ]; then
         mb_temp="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/temperature-temp2.rrd ]; then
-        mb_temp=""
+        mb_temp="sensors-acpitz*"
     else
         mb_temp=""
     fi
@@ -570,7 +570,7 @@ if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
             cpu_fan="sensors-emc6d103-i2c-1-2e"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
-        cpu_fan=""
+        cpu_fan="sensors-acpitz*"
     else
         cpu_fan=""
     fi
@@ -616,7 +616,7 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-emc6d103-i2c-1-2d"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-acpitz*/fanspeed-fan1.rrd ]; then
-        sys_fan=""
+        sys_fan="sensors-acpitz*"
     else
         sys_fan=""
     fi
