@@ -391,6 +391,8 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
     # Like cores but ATM i don't know values
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp1.rrd ]; then
         main_cpu="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-f71808a* ]; then
+        core="sensors-f71808a*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6792*/temperature-temp2.rrd ]; then
         main_cpu="sensors-nct6792*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6776*/temperature-temp2.rrd ]; then
@@ -537,6 +539,8 @@ if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ]; then
     # Get CPU FAN
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-f71808a*/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-f71808a*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6792*/fanspeed-fan2.rrd ]; then
         cpu_fan="sensors-nct6792*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6776*/fanspeed-fan2.rrd ]; then
