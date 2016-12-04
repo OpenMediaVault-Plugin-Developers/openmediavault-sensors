@@ -56,6 +56,7 @@ EOF
             "sensors-nct6779"*) rrd=2 ;;
             "sensors-w83627thf"*) rrd=2 ;;
             "sensors-it8728"*) rrd=3 ;;
+            "sensors-f71808a"*) rrd=2 ;;
             *) rrd=1 ;;
         esac
         cat <<EOF >> $CPUoutfile
