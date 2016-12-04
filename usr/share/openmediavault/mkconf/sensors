@@ -824,12 +824,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $MBoutfile
 ${starteof1}
-LoadPlugin mb
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $MBoutfile
 ${starteof2}
 # <<< [openmediavault] mb-script
 # Plugin: mb
@@ -894,12 +901,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $FANoutfile
 ${starteof1}
-LoadPlugin fan
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $FANoutfile
 ${starteof2}
 # <<< [openmediavault] fan-script
 # Plugin: fan
@@ -966,12 +980,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $SYSoutfile
 ${starteof1}
-LoadPlugin sys
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $SYSoutfile
 ${starteof2}
 # <<< [openmediavault] sys-script
 # Plugin: sys
