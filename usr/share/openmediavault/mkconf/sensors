@@ -421,7 +421,9 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8720* ]; then
         main_cpu="sensors-it8720*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/temperature-temp1.rrd ]; then
-        main_cpu="w83795adg-i2c-4-2f"
+        main_cpu="sensors-w83795adg-i2c-4-2f"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/temperature-temp1.rrd ]; then
+        main_cpu="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
@@ -519,7 +521,9 @@ if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp2.rrd ]; then
         mb_temp="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/temperature-temp2.rrd ]; then
-        mb_temp="w83795adg-i2c-4-2f"
+        mb_temp="sensors-w83795adg-i2c-4-2f"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/temperature-temp2.rrd ]; then
+        mb_temp="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-it8771*/temperature-temp1.rrd ]; then
         mb_temp="sensors-it8771*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp2.rrd ]; then
@@ -569,7 +573,9 @@ if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/fanspeed-fan1.rrd ]; then
-        cpu_fan="w83795adg-i2c-4-2f"
+        cpu_fan="sensors-w83795adg-i2c-4-2f"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/fanspeed-fan1.rrd ]; then
+        cpu_fan="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         cpu_fan="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd ]; then
@@ -615,7 +621,9 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ]; then
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-k10temp*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-k10temp*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-4-2f/fanspeed-fan2.rrd ]; then
-        sys_fan="w83795adg-i2c-4-2f"
+        sys_fan="sensors-w83795adg-i2c-4-2f"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/fanspeed-fan2.rrd ]; then
+        sys_fan="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/fanspeed-fan1.rrd ]; then
@@ -824,12 +832,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $MBoutfile
 ${starteof1}
-LoadPlugin mb
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $MBoutfile
 ${starteof2}
 # <<< [openmediavault] mb-script
 # Plugin: mb
@@ -894,12 +909,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $FANoutfile
 ${starteof1}
-LoadPlugin fan
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $FANoutfile
 ${starteof2}
 # <<< [openmediavault] fan-script
 # Plugin: fan
@@ -966,12 +988,19 @@ set -e
 
 ${collected}
 ${graph}
+EOF
 
+        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+            cat <<EOF >> $SYSoutfile
 ${starteof1}
-LoadPlugin sys
+LoadPlugin sensors
 
 ${endeof}
+EOF
 
+        fi
+		
+        cat <<EOF >> $SYSoutfile
 ${starteof2}
 # <<< [openmediavault] sys-script
 # Plugin: sys
