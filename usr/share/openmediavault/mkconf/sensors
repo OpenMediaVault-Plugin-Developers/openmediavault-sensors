@@ -367,6 +367,7 @@ if [ ! -z $sys_fan ]; then
         "sensors-w83627thf"*) rrd=1 ;;
         "sensors-it8728"*) rrd=3 ;;
         "sensors-fschds-"*) rrd=3 ;;
+        "sensors-f71869a"*) rrd=1 ;;
         *) rrd=2 ;;
     esac
     if [ ! -z "$(omv_config_get "${XPATH}/sysoffset")" ]; then
@@ -506,6 +507,8 @@ if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ]; then
     # Get MB temp
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/temperature-temp2.rrd ]; then
         mb_temp="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-f71869a*/temperature-temp2.rrd ]; then
+        mb_temp="sensors-f71869a*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/temperature-temp5.rrd ]; then
         mb_temp="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6792*/temperature-temp1.rrd ]; then
@@ -610,6 +613,8 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ]; then
     # Get SYS FAN
     if [ -e /var/lib/rrdcached/db/localhost/sensors-atk011*/fanspeed-fan1.rrd ]; then
         sys_fan="sensors-atk0110*"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-f71869a*/fanspeed-fan1.rrd ]; then
+        sys_fan="sensors-f71869a*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/fanspeed-fan2.rrd ]; then
         sys_fan="sensors-w83795adg-i2c-0-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-nct6792*/fanspeed-fan2.rrd ]; then
