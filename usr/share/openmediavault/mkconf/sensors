@@ -437,6 +437,8 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
         main_cpu="sensors-w83795adg-i2c-4-2f"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83795adg-i2c-0-2f/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83795adg-i2c-0-2f"
+    elif [ -e /var/lib/rrdcached/db/localhost/sensors-it877*/temperature-temp1.rrd ]; then
+        mb_temp="sensors-it877*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-w83667hg*/temperature-temp1.rrd ]; then
         main_cpu="sensors-w83667hg*"
     elif [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd ] && [ -e /var/lib/rrdcached/db/localhost/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd ]; then
