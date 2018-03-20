@@ -1,3 +1,9 @@
+openmediavault-sensors (4.0) TESTING; urgency=low
+
+  * OMV 4 compatibility
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 20 Mar 2018 18:13:00 -0000
+
 openmediavault-sensors (1.0.24) TESTING; urgency=low
 
   * Add sun4i_ts-isa
