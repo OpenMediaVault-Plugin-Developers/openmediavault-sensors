@@ -35,15 +35,8 @@ case "$1" in
             omv_config_add_element "${SERVICE_XPATH}" "linesysfan" "SYS Fan"
         fi
 
-        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            /usr/sbin/omv-sensors-detect --auto
-            cat <<EOF >> /etc/collectd/collectd.conf
-LoadPlugin sensors
-
-EOF
-
-            service collectd restart > /dev/null 2>&1
-        fi
+        echo "LoadPlugin sensors" > /etc/collectd/collectd.conf.d/sensors.conf
+		service collectd restart > /dev/null 2>&1
 
         # Activate package triggers. These triggers are only set during the
         # package installation.

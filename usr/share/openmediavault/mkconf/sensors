@@ -1,3 +1,22 @@
+/usr/sbin/omv-mkrrdgraph
+/usr/share/openmediavault/mkrrdgraph/plugins.d/
+/etc/collectd/collectd.conf.d/
+
+/usr/share/openmediavault/mkconf/collectd.d/
+
+datadir: "/var/lib/collectd/rrd/"
+libdir: "/usr/lib/collectd/"
+
+
+
+
+
+
+
+
+
+
+
 #!/bin/sh
 
 set -e
@@ -7,7 +26,7 @@ set -e
 
 y=0
 #Temps
-CPUoutfile="/usr/share/openmediavault/mkconf/collectd.d/sensors"
+CPUoutfile="/usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py"
 MBoutfile="/usr/share/openmediavault/mkconf/collectd.d/mb"
 #Fans
 FANoutfile="/usr/share/openmediavault/mkconf/collectd.d/fan"
@@ -15,10 +34,11 @@ SYSoutfile="/usr/share/openmediavault/mkconf/collectd.d/sys"
 
 end='\'
 starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
-starteof1='cat <<EOF >> ${OMV_COLLECTD_CONFIG}'
+starteof1='cat <<EOF > "${OMV_COLLECTD_CONFIG_DIR}/sensors.conf"'
 endeof='EOF'
-graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"/usr/sbin/omv-mkgraph"}'
-collected='OMV_COLLECTD_CONFIG=${OMV_COLLECTD_CONFIG:-"/etc/collectd/collectd.conf"}'
+graph='OMV_COLLECTD_RRDTOOL_MKGRAPH=${OMV_COLLECTD_RRDTOOL_MKGRAPH:-"
+"}'
+collected='OMV_COLLECTD_CONFIG_DIR=${OMV_COLLECTD_CONFIG_DIR:-"/etc/collectd/collectd.conf.d"}'
 
 XPATH="/config/services/sensors"
 
@@ -41,12 +61,12 @@ do_cpu1() {
 if [ ! -z $main_cpu ]; then
     if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
-  DEF:cpu1pavg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:AVERAGE ${end}
-  DEF:cpu1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MIN ${end}
-  DEF:cpu1pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MAX ${end}
-  DEF:cpu2pavg=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:AVERAGE ${end}
-  DEF:cpu2pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MIN ${end}
-  DEF:cpu2pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MAX ${end}
+        args.append('DEF:cpu1pavg={data_dir}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:cpu1pmin={data_dir}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MIN'.format(**config))
+        args.append('DEF:cpu1pmax={data_dir}/sensors-emc6d103-i2c-1-2e/temperature-temp3.rrd:value:MAX'.format(**config))
+        args.append('DEF:cpu2pavg={data_dir}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:cpu2pmin={data_dir}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MIN'.format(**config))
+        args.append('DEF:cpu2pmax={data_dir}/sensors-emc6d103-i2c-1-2d/temperature-temp3.rrd:value:MAX'.format(**config))
 EOF
 
     else
@@ -65,9 +85,9 @@ EOF
         fi
 
         cat <<EOF >> $CPUoutfile
-  DEF:cpupavg=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
-  DEF:cpupmin=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MIN ${end}
-  DEF:cpupmax=\\\${DATA}/${main_cpu}/temperature-temp${rrd}.rrd:value:MAX ${end}
+        args.append('DEF:cpupavg={data_dir}/${main_cpu}/temperature-temp${rrd}.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:cpupmin={data_dir}/${main_cpu}/temperature-temp${rrd}.rrd:value:MIN'.format(**config))
+        args.append('DEF:cpupmax={data_dir}/${main_cpu}/temperature-temp${rrd}.rrd:value:MAX'.format(**config))
 EOF
 
     fi
@@ -80,9 +100,9 @@ for items in $cores_no;
 do
     if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
         cat <<EOF >> $CPUoutfile
-  DEF:cpuc$((x - y))avg=\\\${DATA}/${cores}/${items}:value:AVERAGE ${end}
-  DEF:cpuc$((x - y))min=\\\${DATA}/${cores}/${items}:value:MIN ${end}
-  DEF:cpuc$((x - y))max=\\\${DATA}/${cores}/${items}:value:MAX ${end}
+        args.append('DEF:cpuc$((x - y))avg={data_dir}/${cores}/${items}:value:AVERAGE'.format(**config))
+        args.append('DEF:cpuc$((x - y))min={data_dir}/${cores}/${items}:value:MIN'.format(**config))
+        args.append('DEF:cpuc$((x - y))max={data_dir}/${cores}/${items}:value:MAX'.format(**config))
 EOF
 
     fi
@@ -94,9 +114,9 @@ if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
     do
         if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
             cat <<EOF >> $CPUoutfile
-  DEF:cpuc$((x - y))avg=\\\${DATA}/${cores1}/${items}:value:AVERAGE ${end}
-  DEF:cpuc$((x - y))min=\\\${DATA}/${cores1}/${items}:value:MIN ${end}
-  DEF:cpuc$((x - y))max=\\\${DATA}/${cores1}/${items}:value:MAX ${end}
+        args.append('DEF:cpuc$((x - y))avg={data_dir}/${cores1}/${items}:value:AVERAGE'.format(**config))
+        args.append('DEF:cpuc$((x - y))min={data_dir}/${cores1}/${items}:value:MIN'.format(**config))
+        args.append('DEF:cpuc$((x - y))max={data_dir}/${cores1}/${items}:value:MAX'.format(**config))
 EOF
 
         fi
@@ -109,25 +129,25 @@ do_cpu3() {
 if [ ! -z $main_cpu ]; then
     if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
-  LINE1:cpu1pavg\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1" ${end}
-  GPRINT:cpu1pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpu1pavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpu1pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpu1pavg:LAST:"%4.2lf Last\l" ${end}
-  LINE1:cpu2pavg\\\${COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2" ${end}
-  GPRINT:cpu2pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpu2pavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpu2pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpu2pavg:LAST:"%4.2lf Last\l" ${end}
+        args.append('LINE1:cpu1pavg{COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1"'.format(**config))
+        args.append('GPRINT:cpu1pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:cpu1pavg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:cpu1pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:cpu1pavg:LAST:"%4.2lf Last\l"')
+        args.append('LINE1:cpu2pavg{COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2"'.format(**config))
+        args.append('GPRINT:cpu2pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:cpu2pavg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:cpu2pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:cpu2pavg:LAST:"%4.2lf Last\l"')
 EOF
 
     else
         cat <<EOF >> $CPUoutfile
-  LINE1:cpupavg\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}" ${end}
-  GPRINT:cpupmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpupavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpupmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpupavg:LAST:"%4.2lf Last\l" ${end}
+        args.append('LINE1:cpupavg{COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}"'.format(**config))
+        args.append('GPRINT:cpupmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:cpupavg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:cpupmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:cpupavg:LAST:"%4.2lf Last\l"')
 EOF
 
     fi
@@ -138,34 +158,34 @@ do_cpu3f() {
 if [ ! -z $main_cpu ]; then
     if [ "$main_cpu" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $CPUoutfile
-  CDEF:farc1=9,5,/,cpu1pavg,*,32,+ ${end}
-  CDEF:farc2=9,5,/,cpu1pmin,*,32,+ ${end}
-  CDEF:farc3=9,5,/,cpu1pmax,*,32,+ ${end}
-  LINE1:farc1\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1" ${end}
-  GPRINT:farc2:MIN:"%4.2lf Min" ${end}
-  GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:farc3:MAX:"%4.2lf Max" ${end}
-  GPRINT:farc1:LAST:"%4.2lf Last\l" ${end}
-  CDEF:farc4=9,5,/,cpu1pavg,*,32,+ ${end}
-  CDEF:farc5=9,5,/,cpu1pmin,*,32,+ ${end}
-  CDEF:farc6=9,5,/,cpu1pmax,*,32,+ ${end}
-  LINE1:farc1\\\${COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2" ${end}
-  GPRINT:farc5:MIN:"%4.2lf Min" ${end}
-  GPRINT:farc4:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:farc6:MAX:"%4.2lf Max" ${end}
-  GPRINT:farc4:LAST:"%4.2lf Last\l" ${end}
+        CDEF:farc1=9,5,/,cpu1pavg,*,32,+'.format(**config))
+        CDEF:farc2=9,5,/,cpu1pmin,*,32,+'.format(**config))
+        CDEF:farc3=9,5,/,cpu1pmax,*,32,+'.format(**config))
+        args.append('LINE1:farc1{COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}1"'.format(**config))
+        args.append('GPRINT:farc2:MIN:"%4.2lf Min"')
+        args.append('GPRINT:farc1:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:farc3:MAX:"%4.2lf Max"')
+        args.append('GPRINT:farc1:LAST:"%4.2lf Last\l"')
+        CDEF:farc4=9,5,/,cpu1pavg,*,32,+')
+        CDEF:farc5=9,5,/,cpu1pmin,*,32,+')
+        CDEF:farc6=9,5,/,cpu1pmax,*,32,+')
+        args.append('LINE1:farc1{COLOR_CPU2_PHYSICAL}:"${LINEcpuTEMP}2"'.format(**config))
+        args.append('GPRINT:farc5:MIN:"%4.2lf Min"')
+        args.append('GPRINT:farc4:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:farc6:MAX:"%4.2lf Max"')
+        args.append('GPRINT:farc4:LAST:"%4.2lf Last\l"')
 EOF
 
     else
         cat <<EOF >> $CPUoutfile
-  CDEF:farc1=9,5,/,cpupavg,*,32,+ ${end}
-  CDEF:farc2=9,5,/,cpupmin,*,32,+ ${end}
-  CDEF:farc3=9,5,/,cpupmax,*,32,+ ${end}
-  LINE1:farc1\\\${COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}" ${end}
-  GPRINT:farc2:MIN:"%4.2lf Min" ${end}
-  GPRINT:farc1:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:farc3:MAX:"%4.2lf Max" ${end}
-  GPRINT:farc1:LAST:"%4.2lf Last\l" ${end}
+        CDEF:farc1=9,5,/,cpupavg,*,32,+'.format(**config))
+        CDEF:farc2=9,5,/,cpupmin,*,32,+'.format(**config))
+        CDEF:farc3=9,5,/,cpupmax,*,32,+'.format(**config))
+        args.append('LINE1:farc1{COLOR_CPU1_PHYSICAL}:"${LINEcpuTEMP}"'.format(**config))
+        args.append('GPRINT:farc2:MIN:"%4.2lf Min"')
+        args.append('GPRINT:farc1:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:farc3:MAX:"%4.2lf Max"')
+        args.append('GPRINT:farc1:LAST:"%4.2lf Last\l"')
 EOF
 
     fi
@@ -178,11 +198,11 @@ for items in $cores_no;
 do
     if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
         cat <<EOF >> $CPUoutfile
-  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+        args.append('LINE1:cpuc$((x - y))avg{COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))"'.format(**config))
+        args.append('GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min"')
+        args.append('GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max"')
+        args.append('GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l"')
 EOF
 
     fi
@@ -194,11 +214,11 @@ if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
     do
         if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
             cat <<EOF >> $CPUoutfile
-  LINE1:cpuc$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+        args.append('LINE1:cpuc$((x - y))avg{COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))"'.format(**config))
+        args.append('GPRINT:cpuc$((x - y))min:MIN:"%4.2lf Min"')
+        args.append('GPRINT:cpuc$((x - y))avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:cpuc$((x - y))max:MAX:"%4.2lf Max"')
+        args.append('GPRINT:cpuc$((x - y))avg:LAST:"%4.2lf Last\l"')
 EOF
 
         fi
@@ -213,14 +233,14 @@ for items in $cores_no;
 do
     if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
         cat <<EOF >> $CPUoutfile
-  CDEF:far$((x - y))avg=9,5,/,cpuc$((x - y))avg,*,32,+ ${end}
-  CDEF:far$((x - y))min=9,5,/,cpuc$((x - y))min,*,32,+ ${end}
-  CDEF:far$((x - y))max=9,5,/,cpuc$((x - y))max,*,32,+ ${end}
-  LINE1:far$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:far$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:far$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:far$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:far$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+        CDEF:far$((x - y))avg=9,5,/,cpuc$((x - y))avg,*,32,+'.format(**config))
+        CDEF:far$((x - y))min=9,5,/,cpuc$((x - y))min,*,32,+'.format(**config))
+        CDEF:far$((x - y))max=9,5,/,cpuc$((x - y))max,*,32,+'.format(**config))
+        args.append('LINE1:far$((x - y))avg{COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))"'.format(**config))
+        args.append('GPRINT:far$((x - y))min:MIN:"%4.2lf Min"')
+        args.append('GPRINT:far$((x - y))avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:far$((x - y))max:MAX:"%4.2lf Max"')
+        args.append('GPRINT:far$((x - y))avg:LAST:"%4.2lf Last\l"')
 EOF
 
     fi
@@ -232,14 +252,14 @@ if [ -e /var/lib/rrdcached/db/localhost/sensors-coretemp-isa-0001 ]; then
     do
         if [ "$y" = "1" ] && [ $x != "0" ] || [ "$y" = "0" ]; then
             cat <<EOF >> $CPUoutfile
-  CDEF:far$((x - y))avg=9,5,/,cpuc$((x - y))avg,*,32,+ ${end}
-  CDEF:far$((x - y))min=9,5,/,cpuc$((x - y))min,*,32,+ ${end}
-  CDEF:far$((x - y))max=9,5,/,cpuc$((x - y))max,*,32,+ ${end}
-  LINE1:far$((x - y))avg\\\${COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))" ${end}
-  GPRINT:far$((x - y))min:MIN:"%4.2lf Min" ${end}
-  GPRINT:far$((x - y))avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:far$((x - y))max:MAX:"%4.2lf Max" ${end}
-  GPRINT:far$((x - y))avg:LAST:"%4.2lf Last\l" ${end}
+        CDEF:far$((x - y))avg=9,5,/,cpuc$((x - y))avg,*,32,+'.format(**config))
+        CDEF:far$((x - y))min=9,5,/,cpuc$((x - y))min,*,32,+'.format(**config))
+        CDEF:far$((x - y))max=9,5,/,cpuc$((x - y))max,*,32,+'.format(**config))
+        args.append('LINE1:far$((x - y))avg{COLOR_CPU_CORE_$((x - y))}:"Core $((x - y + 1))"')
+        args.append('GPRINT:far$((x - y))min:MIN:"%4.2lf Min"')
+        args.append('GPRINT:far$((x - y))avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:far$((x - y))max:MAX:"%4.2lf Max"')
+        args.append('GPRINT:far$((x - y))avg:LAST:"%4.2lf Last\l"')
 EOF
 
         fi
@@ -268,14 +288,14 @@ if [ ! -z $mb_temp ]; then
         fi
 
         cat <<EOF >> $MBoutfile
-  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
-  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN ${end}
-  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX ${end}
-  LINE1:mbtavg\\\${COLOR_MBT}:"${LINEmbTEMP}" ${end}
-  GPRINT:mbtpmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:mbtavg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:mbtpmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:mbtavg:LAST:"%4.2lf Last\l" ${end}
+        args.append('DEF:mbtavg={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:mbtpmin={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN'.format(**config))
+        args.append('DEF:mbtpmax={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX'.format(**config))
+        args.append('LINE1:mbtavg{COLOR_MBT}:"${LINEmbTEMP}"'.format(**config))
+        args.append('GPRINT:mbtpmin:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:mbtavg:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:mbtpmax:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:mbtavg:LAST:"%4.2lf Last\l"'.format(**config))
 EOF
 
 fi
@@ -296,17 +316,17 @@ if [ ! -z $mb_temp ]; then
         *) rrd=2 ;;
     esac
     cat <<EOF >> $MBoutfile
-  DEF:mbtavg=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE ${end}
-  DEF:mbtpmin=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN ${end}
-  DEF:mbtpmax=\\\${DATA}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX ${end}
-  CDEF:far1=9,5,/,mbtavg,*,32,+ ${end}
-  CDEF:far2=9,5,/,mbtpmin,*,32,+ ${end}
-  CDEF:far3=9,5,/,mbtpmax,*,32,+ ${end}
-  LINE1:far1\\\${COLOR_MBT}:"${LINEmbTEMP}" ${end}
-  GPRINT:far2:MIN:"%4.2lf Min" ${end}
-  GPRINT:far1:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:far3:MAX:"%4.2lf Max" ${end}
-  GPRINT:far1:LAST:"%4.2lf Last\l" ${end}
+        args.append('DEF:mbtavg={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:mbtpmin={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN'.format(**config))
+        args.append('DEF:mbtpmax={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX'.format(**config))
+        CDEF:far1=9,5,/,mbtavg,*,32,+'.format(**config))
+        CDEF:far2=9,5,/,mbtpmin,*,32,+'.format(**config))
+        CDEF:far3=9,5,/,mbtpmax,*,32,+'.format(**config))
+        args.append('LINE1:far1{COLOR_MBT}:"${LINEmbTEMP}"'.format(**config))
+        args.append('GPRINT:far2:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:far1:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:far3:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:far1:LAST:"%4.2lf Last\l"'.format(**config))
 EOF
 
 fi
@@ -316,22 +336,22 @@ do_fan1() {
 if [ ! -z $cpu_fan ]; then
     if [ "$cpu_fan" = "sensors-emc6d103-i2c-1-2e" ]; then
         cat <<EOF >> $FANoutfile
-  DEF:fan1avg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:AVERAGE ${end}
-  DEF:fan1pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MIN ${end}
-  DEF:fan1pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MAX ${end}
-  LINE1:fan1avg\\\${COLOR_CPU1_FAN}:"${LINEcpuFAN}1" ${end}
-  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:fan1avg:LAST:"%4.2lf Last\l" ${end}
-  DEF:fan2avg=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:AVERAGE ${end}
-  DEF:fan2pmin=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MIN ${end}
-  DEF:fan2pmax=\\\${DATA}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MAX ${end}
-  LINE1:fan2avg\\\${COLOR_CPU2_FAN}:"${LINEcpuFAN}2" ${end}
-  GPRINT:fan2pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:fan2avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:fan2pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:fan2avg:LAST:"%4.2lf Last\l" ${end}
+        args.append('DEF:fan1avg={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:fan1pmin={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MIN'.format(**config))
+        args.append('DEF:fan1pmax={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MAX'.format(**config))
+        args.append('LINE1:fan1avg{COLOR_CPU1_FAN}:"${LINEcpuFAN}1"'.format(**config))
+        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('DEF:fan2avg={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:fan2pmin={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MIN'.format(**config))
+        args.append('DEF:fan2pmax={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MAX'.format(**config))
+        args.append('LINE1:fan2avg{COLOR_CPU2_FAN}:"${LINEcpuFAN}2"'.format(**config))
+        args.append('GPRINT:fan2pmin:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:fan2avg:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:fan2pmax:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:fan2avg:LAST:"%4.2lf Last\l"'.format(**config))
 EOF
 
     else
@@ -345,14 +365,14 @@ EOF
         *) rrd=1 ;;
     esac
         cat <<EOF >> $FANoutfile
-  DEF:fan1avg=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
-  DEF:fan1pmin=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
-  DEF:fan1pmax=\\\${DATA}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
-  LINE1:fan1avg\\\${COLOR_CPU1_FAN}:"${LINEcpuFAN}" ${end}
-  GPRINT:fan1pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:fan1avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:fan1pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:fan1avg:LAST:"%4.2lf Last\l" ${end}
+                args.append('DEF:fan1avg={data_dir}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE'.format(**config))
+                args.append('DEF:fan1pmin={data_dir}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN'.format(**config))
+                args.append('DEF:fan1pmax={data_dir}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX'.format(**config))
+        args.append('LINE1:fan1avg{COLOR_CPU1_FAN}:"${LINEcpuFAN}"'.format(**config))
+        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"'.format(**config))
 EOF
 
     fi
@@ -377,14 +397,14 @@ if [ ! -z $sys_fan ]; then
         rrd=$(echo "$(($rrd+$(omv_config_get "${XPATH}/sysoffset")))")
     fi
     cat <<EOF >> $SYSoutfile
-  DEF:sfan1avg=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE ${end}
-  DEF:sfan1pmin=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MIN ${end}
-  DEF:sfan1pmax=\\\${DATA}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MAX ${end}
-  LINE1:sfan1avg\\\${COLOR_SYS_FAN}:"${LINEsysFAN}" ${end}
-  GPRINT:sfan1pmin:MIN:"%4.2lf Min" ${end}
-  GPRINT:sfan1avg:AVERAGE:"%4.2lf Avg" ${end}
-  GPRINT:sfan1pmax:MAX:"%4.2lf Max" ${end}
-  GPRINT:sfan1avg:LAST:"%4.2lf Last\l" ${end}
+        args.append('DEF:sfan1avg={data_dir}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:AVERAGE'.format(**config))
+        args.append('DEF:sfan1pmin={data_dir}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MIN'.format(**config))
+        args.append('DEF:sfan1pmax={data_dir}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MAX'.format(**config))
+        args.append('LINE1:sfan1avg{COLOR_SYS_FAN}:"${LINEsysFAN}"'.format(**config))
+        args.append('GPRINT:sfan1pmin:MIN:"%4.2lf Min"'.format(**config))
+        args.append('GPRINT:sfan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
+        args.append('GPRINT:sfan1pmax:MAX:"%4.2lf Max"'.format(**config))
+        args.append('GPRINT:sfan1avg:LAST:"%4.2lf Last\l"'.format(**config))
 EOF
 
 fi
@@ -729,14 +749,14 @@ fi
 
 if ([ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ] && [ ! -z $main_cpu ]) || ([ ! -z $core ] && [ "$(omv_config_get "${XPATH}/shcore")" = "1" ]); then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
-        cat <<EOF > $CPUoutfile
+        cat <<EOF > /usr/share/openmediavault/mkconf/collectd.d/sensors
 #!/bin/sh
 #
 # This file is part of OpenMediaVault.
 #
 # @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
 # @author    Volker Theile <volker.theile@openmediavault.org>
-# @copyright Copyright (c) 2009-2015 Volker Theile
+# @copyright Copyright (c) 2009-2018 Volker Theile
 #
 # OpenMediaVault is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -757,33 +777,65 @@ set -e
 . /usr/share/openmediavault/scripts/helper-functions
 
 ${collected}
-${graph}
 
 ${starteof1}
 LoadPlugin sensors
-
 ${endeof}
+EOF
 
-${starteof2}
-# <<< [openmediavault] sensors-script
-# Plugin: sensors
-TITLE_LOAD="${GRAPHcpuTITLE}"
-COLOR_CPU1_PHYSICAL="#00cc00" # green
-COLOR_CPU2_PHYSICAL="#004f00" # dark green
-COLOR_CPU_CORE_0="#0000fd"    # blue
-COLOR_CPU_CORE_1="#ff0000"    # red
-COLOR_CPU_CORE_2="#cc00cc"    # purple
-COLOR_CPU_CORE_3="#0000cc"    # dark blue
-COLOR_CPU_CORE_4="#cc6600"    # brown
-COLOR_CPU_CORE_5="#ff8308"    # orange
-COLOR_CPU_CORE_6="#ffce3b"    # yellow
-COLOR_CPU_CORE_7="#004f00"    # dark green
-COLOR_MBT="#000000"           # black
-$endeof
-for ucperiod in HOUR DAY WEEK MONTH YEAR; do
-        lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
-        ${starteof2}
-rrdtool graph \\\${IMGDIR}/sensors-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+    fi
+	
+    cat <<EOF > $CPUoutfile
+# -*- coding: utf-8 -*-
+#
+# This file is part of OpenMediaVault.
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Volker Theile <volker.theile@openmediavault.org>
+# @copyright Copyright (c) 2009-2018 Volker Theile
+#
+# OpenMediaVault is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# OpenMediaVault is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+import openmediavault.mkrrdgraph
+import openmediavault.subprocess
+
+class Plugin(openmediavault.mkrrdgraph.IPlugin):
+    def create_graph(self, config):
+        # http://paletton.com/#uid=33r0-0kwi++bu++hX++++rd++kX
+        config.update({
+            'title_cpu': '${GRAPHcpuTITLE}',
+            'COLOR_CPU1_PHYSICAL': '#00cc00',
+            'COLOR_CPU2_PHYSICAL': '#004f00',
+            'COLOR_CPU_CORE_0': '#0000fd',
+            'COLOR_CPU_CORE_1': '#ff0000',
+            'COLOR_CPU_CORE_2': '#cc00cc',
+            'COLOR_CPU_CORE_3': '#0000cc',
+            'COLOR_CPU_CORE_4': '#cc6600',
+            'COLOR_CPU_CORE_5': '#ff8308',
+            'COLOR_CPU_CORE_6': '#ffce3b',
+            'COLOR_CPU_CORE_7': '#004f00',
+            'COLOR_MBT': '#000000'
+        })
+        args = []
+        args.append('{image_dir}/sensors-{period}.png'.format(**config))
+        args.extend(config['defaults'])
+        args.extend(['--start', config['start']])
+        args.extend(['--title', '"{title_cpu}{title_by_period}"'.format(**config)])
+        args.append('--slope-mode')
+        args.extend(['--upper-limit', '100'])
+        args.extend(['--lower-limit', '0'])
+        args.append('--rigid')
+        args.extend(['--vertical-label', 'Temperature'])
 EOF
 
         do_cpu1;
@@ -814,19 +866,14 @@ EOF
             fi
         fi
 
-        cat <<EOF >> $CPUoutfile
-COMMENT:"\\\${LASTUPDATE}" >/dev/null
-${endeof}
-done
-${starteof2}
-# >>> [openmediavault] sensors-script
-${endeof}
+		cat <<EOF >> $CPUoutfile
+        args.append('COMMENT:"{last_update}"'.format(**config))
+        openmediavault.mkrrdgraph.call_rrdtool_graph(args)
+        return 0
 EOF
 
-    fi
-
     chmod +x $CPUoutfile
-    $CPUoutfile
+    python3 $CPUoutfile
 fi
 
 if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ] && [ "$(omv_config_get "${XPATH}/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
@@ -882,7 +929,7 @@ $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
         ${starteof2}
-rrdtool graph \\\${IMGDIR}/mb-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0 ${end}
+rrdtool graph \\\${IMGDIR}/mb-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 80 --lower-limit 0 --units-exponent 0'.format(**config))
 EOF
 
         if [ "$(omv_config_get "${XPATH}/fheit")" = "1" ]; then
@@ -961,7 +1008,7 @@ $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
         ${starteof2}
-rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0 ${end}
+rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0'.format(**config))
 EOF
 
         do_fan1;
@@ -994,7 +1041,7 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get 
 #
 # @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
 # @author    Volker Theile <volker.theile@openmediavault.org>
-# @copyright Copyright (c) 2009-2015 Volker Theile
+# @copyright Copyright (c) 2009-2018 Volker Theile
 #
 # OpenMediaVault is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1038,7 +1085,7 @@ $endeof
 for ucperiod in HOUR DAY WEEK MONTH YEAR; do
         lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
         ${starteof2}
-rrdtool graph \\\${IMGDIR}/sys-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0 ${end}
+rrdtool graph \\\${IMGDIR}/sys-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0'.format(**config))
 EOF
 
         do_sys1;
@@ -1066,7 +1113,7 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" -o "$(omv_config_get "${XPAT
  *
  * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
  * @author    Volker Theile <volker.theile@openmediavault.org>
- * @copyright Copyright (c) 2009-2015 Volker Theile
+ * @copyright Copyright (c) 2009-2018 Volker Theile
  *
  * OpenMediaVault is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1081,15 +1128,15 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" -o "$(omv_config_get "${XPAT
  * You should have received a copy of the GNU General Public License
  * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
  */
-// require("js/omv/Rpc.js")
+// require("js/omv/workspace/panel/RrdGraph.js")
 // require("js/omv/workspace/tab/Panel.js")
 
 /**
  * @class OMV.module.admin.diagnostic.system.plugin.Sensors
- * @derived OMV.workspace.tab.Panel
+ * @derived OMV.workspace.panel.RrdGraph
  */
 Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
-        extend: "OMV.workspace.tab.Panel",
+        extend: "OMV.workspace.panel.RrdGraph",
         alias: "omv.plugin.diagnostic.system.sensors",
 
         title: _("${TABmain}"),
@@ -1146,9 +1193,10 @@ EOF
 fi
 
 #add these last
-service collectd restart > /dev/null 2>&1
-/usr/sbin/omv-mkgraph > /dev/null 2>&1
 rm -f /var/cache/openmediavault/cache.*.json > /dev/null 2>&1
+service collectd restart > /dev/null 2>&1
+service rrdcached restart > /dev/null 2>&1
+/usr/sbin/omv-mkrrdgraph > /dev/null 2>&1
 
 exit 0
 
