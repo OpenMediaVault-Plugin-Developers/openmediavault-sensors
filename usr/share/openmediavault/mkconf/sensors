@@ -1,22 +1,3 @@
-/usr/sbin/omv-mkrrdgraph
-/usr/share/openmediavault/mkrrdgraph/plugins.d/
-/etc/collectd/collectd.conf.d/
-
-/usr/share/openmediavault/mkconf/collectd.d/
-
-datadir: "/var/lib/collectd/rrd/"
-libdir: "/usr/lib/collectd/"
-
-
-
-
-
-
-
-
-
-
-
 #!/bin/sh
 
 set -e
@@ -699,7 +680,7 @@ fi
 if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
     sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
 fi
-sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
+sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkrrdgraph
 
 
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
@@ -713,7 +694,7 @@ fi
 if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
     sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
 fi
-sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
+sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkrrdgraph
 
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
     rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
@@ -726,7 +707,7 @@ fi
 if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
     sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
 fi
-sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
+sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkrrdgraph
 
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
     rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
@@ -739,7 +720,7 @@ fi
 if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
     sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
 fi
-sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
+sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkrrdgraph
 
 #Run /usr/sbin/omv-sensors-detect > /dev/null 2>&1 here ONLY once
 if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" -o "$(omv_config_get "${XPATH}/sysfanenable")" = "1" -o "$(omv_config_get "${XPATH}/cpufanenable")" = "1" -o "$(omv_config_get "${XPATH}/mbtemp")" = "1" ]; then
