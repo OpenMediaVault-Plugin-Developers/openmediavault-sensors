@@ -1,117 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="64px"
-   version="1.1"
-   viewBox="0 0 210.0 210.0"
-   width="64px"
-   id="svg2"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="sensors2.svg">
-  <metadata
-     id="metadata44">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1200"
-     inkscape:window-height="757"
-     id="namedview42"
-     showgrid="false"
-     inkscape:zoom="13.554858"
-     inkscape:cx="54.764513"
-     inkscape:cy="64.01429"
-     inkscape:window-x="290"
-     inkscape:window-y="293"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg2" />
-  <defs
-     id="defs4" />
-  <circle
-     cx="104.99999"
-     cy="104.99999"
-     id="ellipse6"
-     style="fill:#f5f5f5;stroke:#000000;stroke-width:0.37264212mm"
-     r="104.33981" />
-  <defs
-     id="defs8" />
-  <polyline
-     points="105.0,35.0 105.0,65.0"
-     id="polyline10"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:none;stroke:#000000;stroke-width:0.25mm" />
-  <defs
-     id="defs12" />
-  <polyline
-     points="127.9,72.2 145.2,47.7"
-     id="polyline14"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:none;stroke:#000000;stroke-width:0.25mm" />
-  <defs
-     id="defs16" />
-  <polyline
-     points="82.1,72.2 64.8,47.7"
-     id="polyline18"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:none;stroke:#000000;stroke-width:0.25mm" />
-  <defs
-     id="defs20" />
-  <polyline
-     points="142.6,91.3 170.8,81.1"
-     id="polyline22"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:none;stroke:#000000;stroke-width:0.25mm" />
-  <defs
-     id="defs24" />
-  <polyline
-     points="67.4,91.3 39.2,81.1"
-     id="polyline26"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:none;stroke:#000000;stroke-width:0.25mm" />
-  <defs
-     id="defs28" />
-  <ellipse
-     cx="104.99999"
-     cy="104.99999"
-     id="ellipse30"
-     style="fill:none;stroke:#404040;stroke-width:0.37264212mm"
-     rx="17.886822"
-     ry="17.886824" />
-  <defs
-     id="defs32" />
-  <polygon
-     points="124.94927,48.378215 109.7686,106.50349 100.2314,103.49651 121.13439,47.175426 124.54532,43.008222 "
-     id="polygon34"
-     transform="matrix(1.4905686,0,0,1.4905687,-51.509709,-51.509718)"
-     style="fill:#404040" />
-  <defs
-     id="defs36" />
-  <ellipse
-     cx="104.99999"
-     cy="104.99999"
-     id="ellipse38"
-     style="fill:#404040"
-     rx="10.43398"
-     ry="10.433981" />
-  <defs
-     id="defs40" /> </svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:6;stroke-linecap:round;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#000000;stroke-width:8;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<title></title>
+<circle cx="32" cy="46" r="12"/>
+<line class="st0" x1="32" y1="13" x2="32" y2="46"/>
+<line class="st1" x1="32" y1="13" x2="32" y2="37"/>
+<line class="st2" x1="32" y1="23.5" x2="32" y2="50.5"/>
+<circle cx="32" cy="46" r="9"/>
+</svg>
