@@ -20,7 +20,7 @@ case "$1" in
             if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
                 sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
             fi
-            sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkrrdgraph
+            sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
 
             if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
                 rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
@@ -33,7 +33,7 @@ case "$1" in
             if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
                 sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
             fi
-            sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkrrdgraph
+            sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
 
             if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
                 rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
@@ -46,7 +46,7 @@ case "$1" in
             if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
                 sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
             fi
-            sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkrrdgraph
+            sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
 
             if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
                 rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
@@ -67,7 +67,7 @@ case "$1" in
             if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
                 sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
             fi
-            sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkrrdgraph
+            sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
 
             rm /var/lib/rrdcached/db/localhost/sensors-* -Rf
             rm /usr/sbin/omv-sensors-detect -Rf
