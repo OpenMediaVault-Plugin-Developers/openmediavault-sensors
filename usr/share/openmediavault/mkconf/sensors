@@ -10,8 +10,8 @@ y=0
 CPUoutfile="/usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py"
 MBoutfile="/usr/share/openmediavault/mkrrdgraph/plugins.d/mb.py"
 #Fans
-FANoutfile="/usr/share/openmediavault/mkconf/collectd.d/fan"
-SYSoutfile="/usr/share/openmediavault/mkconf/collectd.d/sys"
+FANoutfile="/usr/share/openmediavault/mkrrdgraph/plugins.d/fan.py"
+SYSoutfile="/usr/share/openmediavault/mkrrdgraph/plugins.d/sys.py"
 
 end='\'
 starteof2='cat <<EOF >> ${OMV_COLLECTD_RRDTOOL_MKGRAPH}'
@@ -273,10 +273,10 @@ if [ ! -z $mb_temp ]; then
         args.append('DEF:mbtpmin={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MIN'.format(**config))
         args.append('DEF:mbtpmax={data_dir}/${mb_temp}/temperature-temp${rrd}.rrd:value:MAX'.format(**config))
         args.append('LINE1:mbtavg{COLOR_MBT}:"${LINEmbTEMP}"'.format(**config))
-        args.append('GPRINT:mbtpmin:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:mbtavg:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:mbtpmax:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:mbtavg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:mbtpmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:mbtavg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:mbtpmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:mbtavg:LAST:"%4.2lf Last\l"')
 EOF
 
 fi
@@ -304,10 +304,10 @@ if [ ! -z $mb_temp ]; then
         CDEF:far2=9,5,/,mbtpmin,*,32,+'.format(**config))
         CDEF:far3=9,5,/,mbtpmax,*,32,+'.format(**config))
         args.append('LINE1:far1{COLOR_MBT}:"${LINEmbTEMP}"'.format(**config))
-        args.append('GPRINT:far2:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:far1:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:far3:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:far1:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:far2:MIN:"%4.2lf Min"')
+        args.append('GPRINT:far1:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:far3:MAX:"%4.2lf Max"')
+        args.append('GPRINT:far1:LAST:"%4.2lf Last\l"')
 EOF
 
 fi
@@ -321,18 +321,18 @@ if [ ! -z $cpu_fan ]; then
         args.append('DEF:fan1pmin={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MIN'.format(**config))
         args.append('DEF:fan1pmax={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan2.rrd:value:MAX'.format(**config))
         args.append('LINE1:fan1avg{COLOR_CPU1_FAN}:"${LINEcpuFAN}1"'.format(**config))
-        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"')
         args.append('DEF:fan2avg={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:AVERAGE'.format(**config))
         args.append('DEF:fan2pmin={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MIN'.format(**config))
         args.append('DEF:fan2pmax={data_dir}/sensors-emc6d103-i2c-1-2e/fanspeed-fan1.rrd:value:MAX'.format(**config))
         args.append('LINE1:fan2avg{COLOR_CPU2_FAN}:"${LINEcpuFAN}2"'.format(**config))
-        args.append('GPRINT:fan2pmin:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:fan2avg:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:fan2pmax:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:fan2avg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:fan2pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:fan2avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:fan2pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:fan2avg:LAST:"%4.2lf Last\l"')
 EOF
 
     else
@@ -350,10 +350,10 @@ EOF
         args.append('DEF:fan1pmin={data_dir}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MIN'.format(**config))
         args.append('DEF:fan1pmax={data_dir}/${cpu_fan}/fanspeed-fan${rrd}.rrd:value:MAX'.format(**config))
         args.append('LINE1:fan1avg{COLOR_CPU1_FAN}:"${LINEcpuFAN}"'.format(**config))
-        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:fan1pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:fan1avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:fan1pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:fan1avg:LAST:"%4.2lf Last\l"')
 EOF
 
     fi
@@ -382,10 +382,10 @@ if [ ! -z $sys_fan ]; then
         args.append('DEF:sfan1pmin={data_dir}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MIN'.format(**config))
         args.append('DEF:sfan1pmax={data_dir}/${sys_fan}/fanspeed-fan${rrd}.rrd:value:MAX'.format(**config))
         args.append('LINE1:sfan1avg{COLOR_SYS_FAN}:"${LINEsysFAN}"'.format(**config))
-        args.append('GPRINT:sfan1pmin:MIN:"%4.2lf Min"'.format(**config))
-        args.append('GPRINT:sfan1avg:AVERAGE:"%4.2lf Avg"'.format(**config))
-        args.append('GPRINT:sfan1pmax:MAX:"%4.2lf Max"'.format(**config))
-        args.append('GPRINT:sfan1avg:LAST:"%4.2lf Last\l"'.format(**config))
+        args.append('GPRINT:sfan1pmin:MIN:"%4.2lf Min"')
+        args.append('GPRINT:sfan1avg:AVERAGE:"%4.2lf Avg"')
+        args.append('GPRINT:sfan1pmax:MAX:"%4.2lf Max"')
+        args.append('GPRINT:sfan1avg:LAST:"%4.2lf Last\l"')
 EOF
 
 fi
@@ -669,66 +669,71 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ]; then
     fi
 fi
 
+#Clear files ready for new settings
+if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
+    sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
+fi
+
+if [ -f /usr/sbin/omv-mkgraph ]; then
+    rm -f /usr/sbin/omv-mkgraph
+fi
+
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
     rm -f /usr/share/openmediavault/mkconf/collectd.d/sensors
+fi
+
+if [ -f /etc/collectd/collectd.conf.d/sensors.conf ]; then
+    rm -f /etc/collectd/collectd.conf.d/sensors.conf
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py
+fi
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
+fi
+
+if [ -f /etc/collectd/collectd.conf.d/mb.conf ]; then
+    rm -f /etc/collectd/collectd.conf.d/mb.conf
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/mb.py ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/mb.py
+fi
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
+fi
+
+if [ -f /etc/collectd/collectd.conf.d/fan.conf ]; then
+    rm -f /etc/collectd/collectd.conf.d/fan.conf
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/fan.py ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/fan.py
+fi
+
+if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
+    rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
+fi
+
+if [ -f /etc/collectd/collectd.conf.d/sys.conf ]; then
+    rm -f /etc/collectd/collectd.conf.d/sys.conf
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sys.py ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sys.py
 fi
 
 if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
     rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
 fi
 
-if grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-    sed -i '/LoadPlugin sensors/d' /etc/collectd/collectd.conf
-fi
-sed -i '/#\ <<<\ \[openmediavault\]\ sensors-script/,/#\ >>>\ \[openmediavault\]\ sensors-script/d' /usr/sbin/omv-mkgraph
-
-
-if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
-    rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
-fi
-
-if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js ]; then
-    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Mb.js
-fi
-
-if grep -q "LoadPlugin mb" /etc/collectd/collectd.conf; then
-    sed -i '/LoadPlugin mb/d' /etc/collectd/collectd.conf
-fi
-sed -i '/#\ <<<\ \[openmediavault\]\ mb-script/,/#\ >>>\ \[openmediavault\]\ mb-script/d' /usr/sbin/omv-mkgraph
-
-if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
-    rm -f /usr/share/openmediavault/mkconf/collectd.d/fan
-fi
-
-if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js ]; then
-    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Fan.js
-fi
-
-if grep -q "LoadPlugin fan" /etc/collectd/collectd.conf; then
-    sed -i '/LoadPlugin fan/d' /etc/collectd/collectd.conf
-fi
-sed -i '/#\ <<<\ \[openmediavault\]\ fan-script/,/#\ >>>\ \[openmediavault\]\ fan-script/d' /usr/sbin/omv-mkgraph
-
-if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
-    rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
-fi
-
-if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js ]; then
-    rm -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sys.js
-fi
-
-if grep -q "LoadPlugin sys" /etc/collectd/collectd.conf; then
-    sed -i '/LoadPlugin sys/d' /etc/collectd/collectd.conf
-fi
-sed -i '/#\ <<<\ \[openmediavault\]\ sys-script/,/#\ >>>\ \[openmediavault\]\ sys-script/d' /usr/sbin/omv-mkgraph
-
 #Run /usr/sbin/omv-sensors-detect > /dev/null 2>&1 here ONLY once
 if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" -o "$(omv_config_get "${XPATH}/sysfanenable")" = "1" -o "$(omv_config_get "${XPATH}/cpufanenable")" = "1" -o "$(omv_config_get "${XPATH}/mbtemp")" = "1" ]; then
     #Another if here? does not need to run again.
     /usr/sbin/omv-sensors-detect --auto
-fi
-
-if ([ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ] && [ ! -z $main_cpu ]) || ([ ! -z $core ] && [ "$(omv_config_get "${XPATH}/shcore")" = "1" ]); then
     if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sensors ]; then
         cat <<EOF > /usr/share/openmediavault/mkconf/collectd.d/sensors
 #!/bin/sh
@@ -765,7 +770,9 @@ ${endeof}
 EOF
 
     fi
-	
+fi
+
+if ([ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ] && [ ! -z $main_cpu ]) || ([ ! -z $core ] && [ "$(omv_config_get "${XPATH}/shcore")" = "1" ]); then
     cat <<EOF > $CPUoutfile
 # -*- coding: utf-8 -*-
 #
@@ -858,43 +865,6 @@ EOF
 fi
 
 if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ] && [ "$(omv_config_get "${XPATH}/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
-    if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
-        cat <<EOF > /usr/share/openmediavault/mkconf/collectd.d/mb
-#!/bin/sh
-#
-# This file is part of OpenMediaVault.
-#
-# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
-# @author    Volker Theile <volker.theile@openmediavault.org>
-# @copyright Copyright (c) 2009-2018 Volker Theile
-#
-# OpenMediaVault is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-#
-# OpenMediaVault is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
-
-set -e
-
-. /etc/default/openmediavault
-. /usr/share/openmediavault/scripts/helper-functions
-
-${collected}
-
-${starteof1}
-LoadPlugin mb
-${endeof}
-EOF
-
-    fi
-
     cat <<EOF > $MBoutfile
 # -*- coding: utf-8 -*-
 #
@@ -955,88 +925,8 @@ EOF
 fi
 
 if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ] && [ ! -z $cpu_fan ]; then
-    if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
-        cat <<EOF > $FANoutfile
-#!/bin/sh
-#
-# This file is part of OpenMediaVault.
-#
-# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
-# @author    Volker Theile <volker.theile@openmediavault.org>
-# @copyright Copyright (c) 2009-2015 Volker Theile
-#
-# OpenMediaVault is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-#
-# OpenMediaVault is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
-
-set -e
-
-. /etc/default/openmediavault
-. /usr/share/openmediavault/scripts/helper-functions
-
-${collected}
-${graph}
-EOF
-
-        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            cat <<EOF >> $FANoutfile
-${starteof1}
-LoadPlugin sensors
-
-${endeof}
-EOF
-
-        fi
-		
-        cat <<EOF >> $FANoutfile
-${starteof2}
-# <<< [openmediavault] fan-script
-# Plugin: fan
-TITLE_LOAD="${GRAPHcfanTITLE}"
-COLOR_CPU1_FAN="#000000" # black
-COLOR_CPU2_FAN="#ff0000" # red
-COLOR_SYS_FAN="#00CC00" # black
-$endeof
-for ucperiod in HOUR DAY WEEK MONTH YEAR; do
-        lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
-        ${starteof2}
-rrdtool graph \\\${IMGDIR}/fan-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0'.format(**config))
-EOF
-
-        do_fan1;
-        if [ "$(omv_config_get "${XPATH}/jnfans")" = "1" ]; then
-            SYSoutfile=$FANoutfile
-            do_sys1;
-        fi
-
-        cat <<EOF >> $FANoutfile
-COMMENT:"\\\${LASTUPDATE}" >/dev/null
-${endeof}
-done
-${starteof2}
-# >>> [openmediavault] fan-script
-${endeof}
-EOF
-
-    fi
-
-    chmod +x $FANoutfile
-    $FANoutfile
-fi
-
-if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get "${XPATH}/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
-    if [ ! -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
-        cat <<EOF > $SYSoutfile
-#!/bin/sh
+    cat <<EOF > $FANoutfile
+# -*- coding: utf-8 -*-
 #
 # This file is part of OpenMediaVault.
 #
@@ -1056,54 +946,100 @@ if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get 
 #
 # You should have received a copy of the GNU General Public License
 # along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+import openmediavault.mkrrdgraph
+import openmediavault.subprocess
 
-set -e
-
-. /etc/default/openmediavault
-. /usr/share/openmediavault/scripts/helper-functions
-
-${collected}
-${graph}
+class Plugin(openmediavault.mkrrdgraph.IPlugin):
+    def create_graph(self, config):
+        # http://paletton.com/#uid=33r0-0kwi++bu++hX++++rd++kX
+        config.update({
+            'TITLE_LOAD': '${GRAPHcfanTITLE}',
+            'COLOR_CPU1_FAN': '#000000',
+            'COLOR_CPU1_FAN': '#ff0000',
+            'COLOR_CPU1_FAN': '#000000'
+        })
+        args = []
+        args.append('{image_dir}/fan-{period}.png'.format(**config))
+        args.extend(config['defaults'])
+        args.extend(['--start', config['start']])
+        args.extend(['--title', '"{TITLE_LOAD}{title_by_period}"'.format(**config)])
+        args.append('--slope-mode')
+        args.extend(['--upper-limit', '2000'])
+        args.extend(['--lower-limit', '0'])
+        args.append('--rigid')
+        args.extend(['--vertical-label', 'Speed'])
 EOF
 
-        if ! grep -q "LoadPlugin sensors" /etc/collectd/collectd.conf; then
-            cat <<EOF >> $SYSoutfile
-${starteof1}
-LoadPlugin sensors
-
-${endeof}
-EOF
-
-        fi
-		
-        cat <<EOF >> $SYSoutfile
-${starteof2}
-# <<< [openmediavault] sys-script
-# Plugin: sys
-TITLE_LOAD="${GRAPHsfanTITLE}"
-COLOR_SYS_FAN="#000000" # black
-$endeof
-for ucperiod in HOUR DAY WEEK MONTH YEAR; do
-        lcperiod=\$(echo \${ucperiod} | tr '[:upper:]' '[:lower:]')
-        ${starteof2}
-rrdtool graph \\\${IMGDIR}/sys-\${lcperiod}.png --start \\\${\${ucperiod}START} \\\${DEFAULTS} --title "\\\${TITLE_LOAD}\\\${\${ucperiod}TITLE}" --slope-mode --upper-limit 2000 --lower-limit 0 --units-exponent 0'.format(**config))
-EOF
-
+    do_fan1;
+    if [ "$(omv_config_get "${XPATH}/jnfans")" = "1" ]; then
+        SYSoutfile=$FANoutfile
         do_sys1;
-
-        cat <<EOF >> $SYSoutfile
-COMMENT:"\\\${LASTUPDATE}" >/dev/null
-${endeof}
-done
-${starteof2}
-# >>> [openmediavault] sys-script
-${endeof}
-EOF
-
     fi
 
+    cat <<EOF >> $FANoutfile
+        args.append('COMMENT:"{last_update}"'.format(**config))
+        openmediavault.mkrrdgraph.call_rrdtool_graph(args)
+        return 0
+EOF
+
+    chmod +x $FANoutfile
+    python3 $FANoutfile
+fi
+
+if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get "${XPATH}/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
+    cat <<EOF > $SYSoutfile
+# -*- coding: utf-8 -*-
+#
+# This file is part of OpenMediaVault.
+#
+# @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
+# @author    Volker Theile <volker.theile@openmediavault.org>
+# @copyright Copyright (c) 2009-2018 Volker Theile
+#
+# OpenMediaVault is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# OpenMediaVault is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+import openmediavault.mkrrdgraph
+import openmediavault.subprocess
+
+class Plugin(openmediavault.mkrrdgraph.IPlugin):
+    def create_graph(self, config):
+        # http://paletton.com/#uid=33r0-0kwi++bu++hX++++rd++kX
+        config.update({
+            'TITLE_LOAD': '${GRAPHsfanTITLE}',
+            'COLOR_SYS_FAN': '#000000'
+        })
+        args = []
+        args.append('{image_dir}/fan-{period}.png'.format(**config))
+        args.extend(config['defaults'])
+        args.extend(['--start', config['start']])
+        args.extend(['--title', '"{TITLE_LOAD}{title_by_period}"'.format(**config)])
+        args.append('--slope-mode')
+        args.extend(['--upper-limit', '2000'])
+        args.extend(['--lower-limit', '0'])
+        args.append('--rigid')
+        args.extend(['--vertical-label', 'Speed'])
+EOF
+
+    do_sys1;
+
+    cat <<EOF >> $SYSoutfile
+        args.append('COMMENT:"{last_update}"'.format(**config))
+        openmediavault.mkrrdgraph.call_rrdtool_graph(args)
+        return 0
+EOF
+
     chmod +x $SYSoutfile
-    $SYSoutfile
+    python3 $SYSoutfile
 fi
 
 #Create .js file.
@@ -1129,15 +1065,14 @@ if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" -o "$(omv_config_get "${XPAT
  * You should have received a copy of the GNU General Public License
  * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
  */
-// require("js/omv/workspace/panel/RrdGraph.js")
 // require("js/omv/workspace/tab/Panel.js")
 
 /**
  * @class OMV.module.admin.diagnostic.system.plugin.Sensors
- * @derived OMV.workspace.panel.RrdGraph
+ * @derived OMV.workspace.tab.Panel
  */
 Ext.define("OMV.module.admin.diagnostic.system.plugin.Sensors", {
-        extend: "OMV.workspace.panel.RrdGraph",
+        extend: "OMV.workspace.tab.Panel",
         alias: "omv.plugin.diagnostic.system.sensors",
 
         title: _("${TABmain}"),
@@ -1150,44 +1085,43 @@ EOF
 
     if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
-                                                title: "${TABcpuTEMP}",
-                                                rrdGraphName: "sensors"
-                                        }));
+                this.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                    title: "${TABcpuTEMP}",
+                    rrdGraphName: "sensors"
+                }));
 EOF
     fi
 
     if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ] && [ "$(omv_config_get "${XPATH}/jntemp")" = "0" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
-                                                title: "${TABmbTEMP}",
-                                                rrdGraphName: "mb"
-                                        }));
+                this.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                    title: "${TABmbTEMP}",
+                    rrdGraphName: "mb"
+                }));
 EOF
     fi
 
     if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
-                                                title: "${TABcpuFAN}",
-                                                rrdGraphName: "fan"
-                                        }));
+                this.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                    title: "${TABcpuFAN}",
+                    rrdGraphName: "fan"
+                }));
 EOF
     fi
 
     if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get "${XPATH}/jnfans")" = "0" ]; then
         cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
-                me.add(Ext.create("OMV.workspace.panel.RrdGraph", {
-                                                title: "${TABsysFAN}",
-                                                rrdGraphName: "sys"
-                                        }));
+                this.add(Ext.create("OMV.workspace.panel.RrdGraph", {
+                    title: "${TABsysFAN}",
+                    rrdGraphName: "sys"
+                }));
 EOF
     fi
 
     cat <<EOF >> /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js
     }
 });
-
 
 EOF
 
