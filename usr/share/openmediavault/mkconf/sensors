@@ -394,12 +394,12 @@ fi
 #Check status of the enable checkboxs
 if [ "$(omv_config_get "${XPATH}/cpuenable")" = "0" -o "$(omv_config_get "${XPATH}/mbtemp")" = "0" ] && [ "$(omv_config_get "${XPATH}/jntemp")" = "1" ]; then
     #Change value to zero
-    xmlstarlet ed -L -u "${XPATH}/jntemp" -v 0 -n ${OMV_CONFIG_FILE}
+    xmlstarlet ed -L -u "${XPATH}/jntemp" -v 0 ${OMV_CONFIG_FILE}
 fi
 
 if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "0" -o "$(omv_config_get "${XPATH}/sysfanenable")" = "0" ] && [ "$(omv_config_get "${XPATH}/jnfans")" = "1" ]; then
     #Change value to zero
-    xmlstarlet ed -L -u "${XPATH}/jnfans" -v 0 -n ${OMV_CONFIG_FILE}
+    xmlstarlet ed -L -u "${XPATH}/jnfans" -v 0 ${OMV_CONFIG_FILE}
 fi
 
 if [ "$(omv_config_get "${XPATH}/cpuenable")" = "1" ]; then
@@ -690,6 +690,10 @@ if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py ]; then
     rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sensors.py
 fi
 
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/sensors.cpython-35.pyc ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/sensors.cpython-35.pyc
+fi
+
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/mb ]; then
     rm -f /usr/share/openmediavault/mkconf/collectd.d/mb
 fi
@@ -700,6 +704,10 @@ fi
 
 if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/mb.py ]; then
     rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/mb.py
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/mb.cpython-35.pyc ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/mb.cpython-35.pyc
 fi
 
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/fan ]; then
@@ -714,6 +722,10 @@ if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/fan.py ]; then
     rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/fan.py
 fi
 
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/fan.cpython-35.pyc ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/fan.cpython-35.pyc
+fi
+
 if [ -f /usr/share/openmediavault/mkconf/collectd.d/sys ]; then
     rm -f /usr/share/openmediavault/mkconf/collectd.d/sys
 fi
@@ -724,6 +736,10 @@ fi
 
 if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sys.py ]; then
     rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/sys.py
+fi
+
+if [ -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/sys.cpython-35.pyc ]; then
+    rm -f /usr/share/openmediavault/mkrrdgraph/plugins.d/__pycache__/sys.cpython-35.pyc
 fi
 
 if [ -f /var/www/openmediavault/js/omv/module/admin/diagnostic/system/plugin/Sensors.js ]; then
@@ -861,7 +877,7 @@ EOF
 EOF
 
     chmod +x $CPUoutfile
-    python3 $CPUoutfile
+    #python3 $CPUoutfile
 fi
 
 if [ "$(omv_config_get "${XPATH}/mbtemp")" = "1" ] && [ "$(omv_config_get "${XPATH}/jntemp")" = "0" ] && [ ! -z $mb_temp ]; then
@@ -907,7 +923,7 @@ class Plugin(openmediavault.mkrrdgraph.IPlugin):
         args.append('--rigid')
         args.extend(['--vertical-label', 'Temperature'])
 EOF
-		
+
     if [ "$(omv_config_get "${XPATH}/fheit")" = "1" ]; then
         do_mb1f;
     else
@@ -921,7 +937,7 @@ EOF
 EOF
 
     chmod +x $MBoutfile
-    python3 $MBoutfile
+    #python3 $MBoutfile
 fi
 
 if [ "$(omv_config_get "${XPATH}/cpufanenable")" = "1" ] && [ ! -z $cpu_fan ]; then
@@ -983,7 +999,7 @@ EOF
 EOF
 
     chmod +x $FANoutfile
-    python3 $FANoutfile
+    #python3 $FANoutfile
 fi
 
 if [ "$(omv_config_get "${XPATH}/sysfanenable")" = "1" ] && [ "$(omv_config_get "${XPATH}/jnfans")" = "0" ] && [ ! -z $sys_fan ]; then
@@ -1039,7 +1055,7 @@ EOF
 EOF
 
     chmod +x $SYSoutfile
-    python3 $SYSoutfile
+    #python3 $SYSoutfile
 fi
 
 #Create .js file.
@@ -1206,3 +1222,4 @@ if [ $retval -gt 0 ]
         write_log "rrd update for $1 failed retval $retval"
         exit 201
 fi
+
